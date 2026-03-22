@@ -4,169 +4,142 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heritage Sumbawa - Bala Datu Ranga</title>
-  <script src="https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Cesium/Cesium.js"></script>
-  <link href="https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #08111f;
-      --panel: rgba(9, 18, 34, 0.92);
-      --panel-soft: rgba(15, 27, 47, 0.92);
-      --line: rgba(255,255,255,0.08);
-      --text: #edf3ff;
-      --muted: #aac0e0;
-      --accent: #5db0ff;
-      --accent-2: #7ee1c3;
-      --warning: #ffd166;
-    }
 
-    * { box-sizing: border-box; }
-    html, body {
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
+  <link
+    href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    html, body, #cesiumContainer {
       width: 100%;
       height: 100%;
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      padding: 0;
       overflow: hidden;
+      font-family: "Segoe UI", Arial, sans-serif;
     }
 
-    #app {
-      display: grid;
-      grid-template-columns: 390px 1fr;
-      width: 100%;
-      height: 100%;
-    }
-
-    #sidebar {
-      background: linear-gradient(180deg, rgba(5,12,23,0.96), rgba(8,17,31,0.96));
-      border-right: 1px solid var(--line);
-      overflow-y: auto;
-      padding: 22px 18px 28px;
-      backdrop-filter: blur(12px);
-      z-index: 10;
+    body {
+      background: #111827;
+      color: #f9fafb;
     }
 
     #cesiumContainer {
-      position: relative;
-      width: 100%;
-      height: 100%;
+      position: absolute;
+      inset: 0;
     }
 
-    .hero {
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(18,36,66,0.92), rgba(8,18,35,0.92));
-      box-shadow: 0 16px 40px rgba(0,0,0,0.28);
-      margin-bottom: 16px;
+    .sidebar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 360px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      z-index: 20;
     }
 
-    .tag {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: rgba(93,176,255,0.16);
-      border: 1px solid rgba(93,176,255,0.35);
-      color: #d6ebff;
-      margin-bottom: 10px;
+    .sidebar h1 {
+      font-size: 22px;
+      line-height: 1.2;
+      margin: 0 0 6px;
+      color: #fbbf24;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.15;
-    }
-
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .section-title {
-      margin: 18px 0 10px;
+    .sidebar .subtitle {
       font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #b7d6ff;
+      color: #d1d5db;
+      margin-bottom: 14px;
     }
 
     .card {
-      background: var(--panel-soft);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
       margin-bottom: 12px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.16);
     }
 
     .card h2 {
-      margin: 0 0 10px;
-      font-size: 17px;
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #fde68a;
     }
 
     .card p, .card li {
+      margin: 0 0 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #f3f4f6;
+    }
+
+    .card ul {
+      padding-left: 18px;
       margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14px;
     }
 
-    .grid {
+    .meta {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 110px 1fr;
+      gap: 6px 10px;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
-    .metric {
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
+    .meta strong {
+      color: #fcd34d;
     }
 
-    .metric .label {
-      display: block;
-      font-size: 12px;
-      color: #9db5d6;
-      margin-bottom: 4px;
-    }
-
-    .metric .value {
-      font-size: 14px;
-      font-weight: 700;
-      color: #f7fbff;
-      word-break: break-word;
-    }
-
-    .button-row {
+    .toolbar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-top: 14px;
+      margin-top: 10px;
     }
 
-    button {
+    .btn {
       appearance: none;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 11px 14px;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      background: #f59e0b;
+      color: #111827;
       transition: 0.2s ease;
     }
 
-    button:hover {
+    .btn:hover {
+      background: #fbbf24;
       transform: translateY(-1px);
-      border-color: rgba(126,225,195,0.45);
-      background: rgba(126,225,195,0.08);
+    }
+
+    .legend {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      z-index: 20;
+      width: 240px;
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .legend h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #fde68a;
     }
 
     .legend-item {
@@ -174,351 +147,391 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
+      color: #f3f4f6;
     }
 
     .swatch {
       width: 14px;
       height: 14px;
-      border-radius: 50%;
-      flex: 0 0 auto;
-      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      flex: 0 0 14px;
     }
 
-    .floating-box {
-      position: absolute;
-      right: 18px;
-      top: 18px;
-      z-index: 20;
-      width: min(380px, calc(100% - 36px));
-      background: rgba(7, 15, 29, 0.88);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 16px;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+    .info-note {
+      font-size: 12px;
+      color: #d1d5db;
+      margin-top: 8px;
+      line-height: 1.5;
     }
 
-    .floating-box h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
+    .cesium-infoBox {
+      max-width: 360px;
     }
 
-    .floating-box p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 13px;
-    }
-
-    .notice {
-      color: #ffe8a3 !important;
-      font-size: 13px !important;
-    }
-
-    .cesium-viewer-toolbar,
-    .cesium-viewer-animationContainer,
-    .cesium-viewer-timelineContainer,
-    .cesium-viewer-bottom {
-      display: none !important;
-    }
-
-    @media (max-width: 980px) {
-      #app {
-        grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+      .sidebar {
+        width: calc(100% - 32px);
+        max-height: 46vh;
       }
-      #sidebar {
-        position: absolute;
-        left: 12px;
-        top: 12px;
-        width: min(420px, calc(100% - 24px));
-        max-height: calc(100% - 24px);
-        border-radius: 24px;
-        border: 1px solid var(--line);
+
+      .legend {
+        width: calc(100% - 32px);
+        right: 16px;
+        left: 16px;
+        bottom: 16px;
       }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <aside id="sidebar">
-      <div class="hero">
-        <div class="tag">Heritage Sumbawa</div>
-        <h1>Bala Datu Ranga</h1>
-        <p class="subtitle">
-          Visualisasi awal warisan budaya Sumbawa berbasis CesiumJS yang menggabungkan model 3D, geometri GeoJSON,
-          dan informasi semantik seperti deskripsi situs, koordinat, serta narasi sejarah yang dapat terus diperkaya.
-        </p>
-        <div class="button-row">
-          <button id="zoomTilesetBtn">Fokus ke Model 3D</button>
-          <button id="zoomGeojsonBtn">Fokus ke GeoJSON</button>
-        </div>
-      </div>
+  <div id="cesiumContainer"></div>
 
-      <div class="section-title">Informasi Semantik</div>
-      <div class="card">
-        <h2>Keterangan Objek</h2>
-        <p id="semanticDescription">
-          Bala Datu Ranga divisualisasikan sebagai objek heritage di Sumbawa untuk mendukung dokumentasi, interpretasi spasial,
-          dan penyajian informasi budaya dalam lingkungan web 3D interaktif.
-        </p>
-      </div>
+  <aside class="sidebar">
+    <h1>Heritage Sumbawa</h1>
+    <div class="subtitle">Visualisasi digital situs Bala Datu Ranga dengan 3D Tiles, GeoJSON, dan informasi semantik.</div>
 
-      <div class="card">
-        <h2>Informasi Koordinat</h2>
-        <div class="grid" id="coordinateGrid"></div>
-      </div>
+    <div class="card">
+      <h2>Deskripsi Situs</h2>
+      <p>
+        Bala Datu Ranga divisualisasikan sebagai bagian dari warisan budaya Sumbawa dalam lingkungan 3D berbasis CesiumJS.
+        Web ini menggabungkan model 3D tiles, geometri spasial GeoJSON, serta informasi semantik agar pengguna dapat
+        menelusuri lokasi, bentuk, dan makna situs secara interaktif.
+      </p>
+    </div>
 
-      <div class="card">
-        <h2>Sejarah dan Konteks</h2>
-        <p id="historyText">
-          Narasi sejarah rinci Bala Datu Ranga belum disertakan pada data yang Anda kirimkan. Pada tahap awal ini,
-          panel sejarah disiapkan sebagai wadah semantik agar nanti dapat diisi dengan sumber terverifikasi seperti sejarah lokal,
-          fungsi bangunan, periode perkembangan, nilai budaya, tokoh terkait, serta perannya dalam lanskap heritage Sumbawa.
-        </p>
+    <div class="card">
+      <h2>Informasi Semantik</h2>
+      <div class="meta">
+        <strong>Nama</strong><span>Bala Datu Ranga</span>
+        <strong>Kategori</strong><span>Heritage / Cagar budaya / Arsitektur tradisional Sumbawa</span>
+        <strong>Wilayah</strong><span>Sumbawa, Nusa Tenggara Barat, Indonesia</span>
+        <strong>Visualisasi</strong><span>CesiumJS + 3D Tiles + GeoJSON + panel semantik</span>
       </div>
+    </div>
 
-      <div class="card">
-        <h2>Atribut Web Heritage</h2>
-        <div class="grid">
-          <div class="metric"><span class="label">Nama Situs</span><span class="value">Bala Datu Ranga</span></div>
-          <div class="metric"><span class="label">Wilayah</span><span class="value">Sumbawa</span></div>
-          <div class="metric"><span class="label">Format Geometri</span><span class="value">GeoJSON LineString</span></div>
-          <div class="metric"><span class="label">Model 3D</span><span class="value">Cesium Ion Asset 4556790</span></div>
-          <div class="metric"><span class="label">Mode Visualisasi</span><span class="value">3D Tiles + Vektor</span></div>
-          <div class="metric"><span class="label">Tahap</span><span class="value">Prototype index.html</span></div>
-        </div>
+    <div class="card">
+      <h2>Koordinat dan Geometri</h2>
+      <div id="coordInfo" class="meta">
+        <strong>Longitude</strong><span id="lonValue">Memuat...</span>
+        <strong>Latitude</strong><span id="latValue">Memuat...</span>
+        <strong>Tinggi</strong><span id="heightValue">-</span>
+        <strong>Extent</strong><span id="extentValue">Menghitung geometri...</span>
       </div>
+    </div>
 
-      <div class="card">
-        <h2>Legenda</h2>
-        <div class="legend-item"><span class="swatch" style="background:#00d4ff"></span> Jalur/outline GeoJSON Bala Datu Ranga</div>
-        <div class="legend-item"><span class="swatch" style="background:#ffd166"></span> Titik pusat geometri untuk informasi situs</div>
-        <div class="legend-item"><span class="swatch" style="background:#7ee1c3"></span> Objek terpilih / fokus informasi</div>
-      </div>
-    </aside>
+    <div class="card">
+      <h2>Sejarah Singkat</h2>
+      <p>
+        Bala Datu Ranga dapat dipresentasikan sebagai situs heritage yang memiliki nilai sejarah, arsitektur,
+        identitas lokal, dan potensi edukasi budaya. Pada tahap awal ini, narasi sejarah ditampilkan sebagai
+        kerangka interpretatif digital dan dapat diperbarui lebih rinci berdasarkan sumber arsip, wawancara,
+        maupun dokumentasi resmi kebudayaan Sumbawa.
+      </p>
+      <ul>
+        <li>Merepresentasikan warisan arsitektur dan identitas lokal Sumbawa.</li>
+        <li>Dapat dikembangkan menjadi media edukasi, dokumentasi, dan promosi heritage digital.</li>
+        <li>Mendukung integrasi data spasial, model 3D, dan informasi sejarah dalam satu antarmuka web.</li>
+      </ul>
+    </div>
 
-    <main id="cesiumContainer">
-      <div class="floating-box">
-        <h3>Catatan Implementasi</h3>
-        <p>
-          Ganti <strong>YOUR_CESIUM_ION_TOKEN</strong> dengan token Cesium Ion Anda. Klik garis GeoJSON atau titik pusat untuk melihat informasi semantik.
-        </p>
-        <p class="notice" style="margin-top:8px;">
-          Teks sejarah pada demo ini masih bersifat draft struktur informasi dan perlu diganti dengan sumber sejarah yang terverifikasi.
-        </p>
+    <div class="card">
+      <h2>Interaksi</h2>
+      <p>
+        Klik geometri GeoJSON atau titik pusat untuk melihat informasi semantik. Model 3D tiles dapat dijelajahi
+        dengan navigasi Cesium untuk memahami konteks visual situs.
+      </p>
+      <div class="toolbar">
+        <button class="btn" id="zoomSiteBtn">Zoom ke Situs</button>
+        <button class="btn" id="showGeojsonBtn">Tampilkan GeoJSON</button>
+        <button class="btn" id="hideGeojsonBtn">Sembunyikan GeoJSON</button>
       </div>
-    </main>
+    </div>
+  </aside>
+
+  <div class="legend">
+    <h3>Legenda</h3>
+    <div class="legend-item"><span class="swatch" style="background:#60a5fa;"></span> GeoJSON Bala Datu Ranga</div>
+    <div class="legend-item"><span class="swatch" style="background:#f59e0b;"></span> Titik pusat situs</div>
+    <div class="legend-item"><span class="swatch" style="background:#34d399;"></span> 3D Tiles heritage</div>
+    <div class="info-note">
+      Pastikan file <b>bala-datu-ranga.geojson</b> berada pada folder yang sama dengan file <b>index.html</b>.
+    </div>
   </div>
 
   <script>
+    // Token Cesium Ion Anda
     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjOWRmOThmYS1iYjhiLTQ4YzgtOTAzMC1hYjE5OGZmZDExMGUiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0MTMxMzB9.oiJJytiAc-uPwL9DTfzg-iulsz8DixZOtWrbtO1K9rI";
 
-    const balaDatuRangaGeoJSON = {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "properties": {
-            "name": "Bala Datu Ranga",
-            "region": "Sumbawa",
-            "category": "Heritage",
-            "description": "Geometri vektor Bala Datu Ranga untuk visualisasi heritage berbasis web 3D.",
-            "history": "Narasi sejarah rinci belum diinput pada data awal dan perlu dilengkapi dari sumber terverifikasi.",
-            "source": "GeoJSON pengguna"
-          },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [117.42698601968266, -8.50605959189852],
-              [117.42705432028407, -8.506082436583483],
-              [117.42703806321464, -8.50615391479711],
-              [117.42705514083121, -8.506160343964567],
-              [117.42709747609081, -8.506065965254223],
-              [117.42717691092452, -8.505850071618397],
-              [117.42707164060607, -8.505827415330913],
-              [117.42698595440936, -8.506059629346481]
-            ]
-          }
-        }
-      ]
-    };
-
-    const semanticData = {
-      title: "Bala Datu Ranga",
-      siteType: "Heritage / Cultural Site",
-      administrativeArea: "Sumbawa",
-      description: "Bala Datu Ranga divisualisasikan sebagai situs heritage Sumbawa dalam lingkungan CesiumJS untuk mendukung dokumentasi digital, pembacaan konteks spasial, dan pengembangan sistem informasi budaya berbasis web 3D.",
-      history: "Isi sejarah rinci belum diberikan pada dataset awal. Untuk versi lanjutan, informasi ini dapat memuat asal-usul situs, periode sejarah, fungsi ruang, nilai arsitektural, hubungan dengan masyarakat lokal, dan status pelestarian.",
-      heritageValue: "Representasi awal untuk dokumentasi, interpretasi, dan edukasi heritage digital.",
-      sourceNote: "Semantik awal dibangun dari nama situs dan geometri yang diberikan pengguna."
-    };
-
-    const coords = balaDatuRangaGeoJSON.features[0].geometry.coordinates;
-
-    function computeCenter(coordinates) {
-      let lon = 0;
-      let lat = 0;
-      coordinates.forEach(c => {
-        lon += c[0];
-        lat += c[1];
-      });
-      return {
-        lon: lon / coordinates.length,
-        lat: lat / coordinates.length
-      };
-    }
-
-    function computeBounds(coordinates) {
-      let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
-      coordinates.forEach(([lon, lat]) => {
-        minLon = Math.min(minLon, lon);
-        minLat = Math.min(minLat, lat);
-        maxLon = Math.max(maxLon, lon);
-        maxLat = Math.max(maxLat, lat);
-      });
-      return { minLon, minLat, maxLon, maxLat };
-    }
-
-    const center = computeCenter(coords);
-    const bounds = computeBounds(coords);
-
     const viewer = new Cesium.Viewer("cesiumContainer", {
-      terrain: Cesium.Terrain.fromWorldTerrain(),
-      timeline: false,
       animation: false,
       baseLayerPicker: true,
-      geocoder: false,
-      sceneModePicker: true,
-      navigationHelpButton: false,
-      infoBox: true,
-      selectionIndicator: true,
+      fullscreenButton: true,
+      vrButton: false,
+      geocoder: true,
       homeButton: true,
-      shouldAnimate: true
+      infoBox: true,
+      sceneModePicker: true,
+      selectionIndicator: true,
+      timeline: false,
+      navigationHelpButton: true,
+      shouldAnimate: true,
+      terrain: Cesium.Terrain.fromWorldTerrain()
     });
 
     viewer.scene.globe.depthTestAgainstTerrain = true;
     viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.fog.enabled = true;
 
-    const coordinateGrid = document.getElementById("coordinateGrid");
-    coordinateGrid.innerHTML = `
-      <div class="metric"><span class="label">Longitude pusat</span><span class="value">${center.lon.toFixed(8)}</span></div>
-      <div class="metric"><span class="label">Latitude pusat</span><span class="value">${center.lat.toFixed(8)}</span></div>
-      <div class="metric"><span class="label">Longitude minimum</span><span class="value">${bounds.minLon.toFixed(8)}</span></div>
-      <div class="metric"><span class="label">Latitude minimum</span><span class="value">${bounds.minLat.toFixed(8)}</span></div>
-      <div class="metric"><span class="label">Longitude maksimum</span><span class="value">${bounds.maxLon.toFixed(8)}</span></div>
-      <div class="metric"><span class="label">Latitude maksimum</span><span class="value">${bounds.maxLat.toFixed(8)}</span></div>
-    `;
+    let geojsonDataSource = null;
+    let siteCenterEntity = null;
+    let tileset = null;
+    let siteCenterCartesian = null;
 
-    document.getElementById("semanticDescription").textContent = semanticData.description;
-    document.getElementById("historyText").textContent = semanticData.history;
+    function formatNum(val, digits = 6) {
+      return Number(val).toFixed(digits);
+    }
 
-    let tileset;
-    let geojsonDataSource;
-    let centroidEntity;
-
-    async function initScene() {
-      try {
-        tileset = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(4556790)
-        );
-        tileset.maximumScreenSpaceError = 8;
-        tileset.show = true;
-      } catch (error) {
-        console.error("Gagal memuat 3D Tiles:", error);
+    function updateCoordinatePanel(longitude, latitude, height, extentText) {
+      document.getElementById("lonValue").textContent = longitude ?? "-";
+      document.getElementById("latValue").textContent = latitude ?? "-";
+      document.getElementById("heightValue").textContent = height ?? "-";
+      if (extentText) {
+        document.getElementById("extentValue").textContent = extentText;
       }
+    }
 
-      geojsonDataSource = await Cesium.GeoJsonDataSource.load(balaDatuRangaGeoJSON, {
-        clampToGround: true,
-        stroke: Cesium.Color.CYAN,
-        fill: Cesium.Color.CYAN.withAlpha(0.15),
-        strokeWidth: 5
-      });
-      viewer.dataSources.add(geojsonDataSource);
+    function cartesianToLonLat(cartesian) {
+      const carto = Cesium.Cartographic.fromCartesian(cartesian);
+      return {
+        lon: Cesium.Math.toDegrees(carto.longitude),
+        lat: Cesium.Math.toDegrees(carto.latitude),
+        height: carto.height
+      };
+    }
 
-      geojsonDataSource.entities.values.forEach(entity => {
-        entity.name = semanticData.title;
-        entity.description = `
-          <table style="width:100%; border-collapse:collapse; font-family:Arial,sans-serif;">
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Nama</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.title}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Kategori</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.siteType}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Wilayah</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.administrativeArea}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Koordinat Pusat</th><td style="padding:6px; border-bottom:1px solid #ddd;">${center.lon.toFixed(8)}, ${center.lat.toFixed(8)}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Deskripsi</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.description}</td></tr>
-            <tr><th align="left" style="padding:6px;">Catatan Sejarah</th><td style="padding:6px;">${semanticData.history}</td></tr>
-          </table>
-        `;
+    function buildSiteDescription(lon, lat, height) {
+      return `
+        <div style="font-family:Segoe UI, Arial, sans-serif; line-height:1.6;">
+          <h2 style="margin:0 0 8px; color:#b45309;">Bala Datu Ranga</h2>
+          <p><b>Kategori:</b> Heritage / Cagar budaya / Arsitektur tradisional Sumbawa</p>
+          <p><b>Lokasi:</b> Sumbawa, Nusa Tenggara Barat, Indonesia</p>
+          <p><b>Koordinat pusat:</b><br>
+            Longitude: ${formatNum(lon, 6)}<br>
+            Latitude: ${formatNum(lat, 6)}<br>
+            Tinggi: ${formatNum(height, 2)} m
+          </p>
+          <p><b>Deskripsi:</b> Visualisasi digital Bala Datu Ranga yang menggabungkan 3D Tiles, GeoJSON, dan informasi semantik untuk interpretasi heritage berbasis web.</p>
+          <p><b>Nilai heritage:</b> Sejarah lokal, identitas budaya, edukasi, dokumentasi digital, dan pelestarian berbasis geospasial.</p>
+        </div>
+      `;
+    }
 
-        if (entity.polyline) {
-          entity.polyline.material = new Cesium.PolylineGlowMaterialProperty({
-            glowPower: 0.18,
-            color: Cesium.Color.CYAN
+    function computeGeoJsonExtent(entities) {
+      let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+      let found = false;
+
+      entities.forEach(entity => {
+        if (entity.position) {
+          const pos = entity.position.getValue(Cesium.JulianDate.now());
+          if (pos) {
+            const c = cartesianToLonLat(pos);
+            minLon = Math.min(minLon, c.lon);
+            minLat = Math.min(minLat, c.lat);
+            maxLon = Math.max(maxLon, c.lon);
+            maxLat = Math.max(maxLat, c.lat);
+            found = true;
+          }
+        }
+
+        if (entity.polyline && entity.polyline.positions) {
+          const positions = entity.polyline.positions.getValue(Cesium.JulianDate.now()) || [];
+          positions.forEach(pos => {
+            const c = cartesianToLonLat(pos);
+            minLon = Math.min(minLon, c.lon);
+            minLat = Math.min(minLat, c.lat);
+            maxLon = Math.max(maxLon, c.lon);
+            maxLat = Math.max(maxLat, c.lat);
+            found = true;
           });
-          entity.polyline.width = 6;
+        }
+
+        if (entity.polygon && entity.polygon.hierarchy) {
+          const hierarchy = entity.polygon.hierarchy.getValue(Cesium.JulianDate.now());
+          const positions = hierarchy?.positions || [];
+          positions.forEach(pos => {
+            const c = cartesianToLonLat(pos);
+            minLon = Math.min(minLon, c.lon);
+            minLat = Math.min(minLat, c.lat);
+            maxLon = Math.max(maxLon, c.lon);
+            maxLat = Math.max(maxLat, c.lat);
+            found = true;
+          });
         }
       });
 
-      centroidEntity = viewer.entities.add({
-        name: semanticData.title + " - Pusat Geometri",
-        position: Cesium.Cartesian3.fromDegrees(center.lon, center.lat, 10),
-        point: {
-          pixelSize: 14,
-          color: Cesium.Color.GOLD,
-          outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 2,
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-        },
-        label: {
-          text: "Bala Datu Ranga",
-          font: "16px sans-serif",
-          fillColor: Cesium.Color.WHITE,
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineWidth: 3,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -18),
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY
-        },
-        description: `
-          <table style="width:100%; border-collapse:collapse; font-family:Arial,sans-serif;">
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Objek</th><td style="padding:6px; border-bottom:1px solid #ddd;">Pusat informasi situs</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Nama Situs</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.title}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Longitude</th><td style="padding:6px; border-bottom:1px solid #ddd;">${center.lon.toFixed(8)}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Latitude</th><td style="padding:6px; border-bottom:1px solid #ddd;">${center.lat.toFixed(8)}</td></tr>
-            <tr><th align="left" style="padding:6px; border-bottom:1px solid #ddd;">Nilai Heritage</th><td style="padding:6px; border-bottom:1px solid #ddd;">${semanticData.heritageValue}</td></tr>
-            <tr><th align="left" style="padding:6px;">Sumber</th><td style="padding:6px;">${semanticData.sourceNote}</td></tr>
-          </table>
-        `
-      });
+      if (!found) return null;
 
-      await zoomToGeojson();
+      return { minLon, minLat, maxLon, maxLat };
     }
 
-    async function zoomToTileset() {
-      if (!tileset) return;
-      await viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(0, -0.45, 120));
-    }
+    async function initScene() {
+      try {
+        // 3D Tiles Ion Asset
+        tileset = viewer.scene.primitives.add(
+          await Cesium.Cesium3DTileset.fromIonAssetId(4556790)
+        );
 
-    async function zoomToGeojson() {
-      if (!geojsonDataSource) return;
-      await viewer.flyTo(geojsonDataSource, {
-        duration: 2.0,
-        offset: new Cesium.HeadingPitchRange(0, -0.7, 120)
-      });
-    }
+        tileset.style = new Cesium.Cesium3DTileStyle({
+          color: "color('white', 1.0)"
+        });
 
-    document.getElementById("zoomTilesetBtn").addEventListener("click", zoomToTileset);
-    document.getElementById("zoomGeojsonBtn").addEventListener("click", zoomToGeojson);
+        // GeoJSON Bala Datu Ranga
+        geojsonDataSource = await Cesium.GeoJsonDataSource.load("bala-datu-ranga.geojson", {
+          clampToGround: true
+        });
+        viewer.dataSources.add(geojsonDataSource);
 
-    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    handler.setInputAction(function (movement) {
-      const picked = viewer.scene.pick(movement.position);
-      if (Cesium.defined(picked) && picked.id) {
-        viewer.selectedEntity = picked.id;
+        const entities = geojsonDataSource.entities.values;
+
+        entities.forEach((entity, index) => {
+          if (entity.polyline) {
+            entity.polyline.width = 4;
+            entity.polyline.material = Cesium.Color.DEEPSKYBLUE;
+            entity.polyline.clampToGround = true;
+          }
+
+          if (entity.polygon) {
+            entity.polygon.material = Cesium.Color.DEEPSKYBLUE.withAlpha(0.35);
+            entity.polygon.outline = true;
+            entity.polygon.outlineColor = Cesium.Color.WHITE;
+            entity.polygon.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+          }
+
+          if (entity.billboard) {
+            entity.billboard.scale = 1.0;
+          }
+
+          // Tambahkan info semantik untuk semua entitas GeoJSON
+          entity.name = entity.name || `Bala Datu Ranga - Objek ${index + 1}`;
+          const originalProps = entity.properties;
+
+          let semanticHtml = `
+            <div style="font-family:Segoe UI, Arial, sans-serif; line-height:1.6;">
+              <h2 style="margin:0 0 8px; color:#1d4ed8;">${entity.name}</h2>
+              <p><b>Situs:</b> Bala Datu Ranga</p>
+              <p><b>Kategori:</b> GeoJSON heritage boundary / geometri spasial</p>
+              <p><b>Keterangan:</b> Objek ini merupakan bagian dari representasi spasial Bala Datu Ranga yang dapat digunakan untuk interpretasi lokasi, batas, atau elemen heritage.</p>
+          `;
+
+          if (originalProps && originalProps.propertyNames && originalProps.propertyNames.length > 0) {
+            semanticHtml += `<p><b>Atribut GeoJSON:</b></p><ul>`;
+            originalProps.propertyNames.forEach(propName => {
+              const val = originalProps[propName]?.getValue
+                ? originalProps[propName].getValue(Cesium.JulianDate.now())
+                : originalProps[propName];
+              semanticHtml += `<li><b>${propName}</b>: ${val}</li>`;
+            });
+            semanticHtml += `</ul>`;
+          } else {
+            semanticHtml += `
+              <p><b>Atribut:</b> File GeoJSON tidak memuat properti detail, sehingga informasi semantik saat ini ditampilkan dari metadata heritage pada web.</p>
+            `;
+          }
+
+          semanticHtml += `
+              <p><b>Makna heritage:</b> Dapat dikembangkan untuk dokumentasi budaya, inventarisasi situs, dan presentasi digital berbasis web GIS 3D.</p>
+            </div>
+          `;
+
+          entity.description = semanticHtml;
+        });
+
+        // Hitung extent dan titik pusat
+        const extent = computeGeoJsonExtent(entities);
+
+        if (extent) {
+          const centerLon = (extent.minLon + extent.maxLon) / 2;
+          const centerLat = (extent.minLat + extent.maxLat) / 2;
+          const centerHeight = 8.0;
+
+          siteCenterCartesian = Cesium.Cartesian3.fromDegrees(centerLon, centerLat, centerHeight);
+
+          siteCenterEntity = viewer.entities.add({
+            name: "Pusat Situs Bala Datu Ranga",
+            position: siteCenterCartesian,
+            point: {
+              pixelSize: 14,
+              color: Cesium.Color.ORANGE,
+              outlineColor: Cesium.Color.WHITE,
+              outlineWidth: 2,
+              disableDepthTestDistance: Number.POSITIVE_INFINITY
+            },
+            label: {
+              text: "Bala Datu Ranga",
+              font: "bold 15px Segoe UI",
+              fillColor: Cesium.Color.WHITE,
+              showBackground: true,
+              backgroundColor: Cesium.Color.BLACK.withAlpha(0.65),
+              pixelOffset: new Cesium.Cartesian2(0, -28),
+              disableDepthTestDistance: Number.POSITIVE_INFINITY
+            },
+            description: buildSiteDescription(centerLon, centerLat, centerHeight)
+          });
+
+          const extentText =
+            `Min (${formatNum(extent.minLon, 6)}, ${formatNum(extent.minLat, 6)}) - ` +
+            `Max (${formatNum(extent.maxLon, 6)}, ${formatNum(extent.maxLat, 6)})`;
+
+          updateCoordinatePanel(
+            formatNum(centerLon, 6),
+            formatNum(centerLat, 6),
+            `${formatNum(centerHeight, 2)} m`,
+            extentText
+          );
+
+          await viewer.flyTo(geojsonDataSource, {
+            duration: 2.5,
+            offset: new Cesium.HeadingPitchRange(0, -0.6, 250)
+          });
+        } else {
+          updateCoordinatePanel("-", "-", "-", "Extent tidak dapat dihitung");
+          await viewer.zoomTo(tileset);
+        }
+
+        // Klik objek
+        const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        handler.setInputAction(function (movement) {
+          const pickedObject = viewer.scene.pick(movement.position);
+          if (Cesium.defined(pickedObject) && pickedObject.id) {
+            viewer.selectedEntity = pickedObject.id;
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+        // Tombol kontrol
+        document.getElementById("zoomSiteBtn").addEventListener("click", async () => {
+          if (geojsonDataSource) {
+            await viewer.flyTo(geojsonDataSource, {
+              duration: 2.0,
+              offset: new Cesium.HeadingPitchRange(0, -0.6, 250)
+            });
+          } else if (tileset) {
+            await viewer.zoomTo(tileset);
+          }
+        });
+
+        document.getElementById("showGeojsonBtn").addEventListener("click", () => {
+          if (geojsonDataSource) geojsonDataSource.show = true;
+        });
+
+        document.getElementById("hideGeojsonBtn").addEventListener("click", () => {
+          if (geojsonDataSource) geojsonDataSource.show = false;
+        });
+
+      } catch (error) {
+        console.error("Gagal memuat scene:", error);
+        alert("Terjadi kesalahan saat memuat Cesium scene. Periksa token, asset Ion, dan file bala-datu-ranga.geojson.");
       }
-    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    }
 
     initScene();
   </script>
