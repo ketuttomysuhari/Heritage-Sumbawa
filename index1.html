@@ -535,7 +535,7 @@
       timeline: false,
       navigationHelpButton: true,
       shouldAnimate: true,
-      terrainProvider: new Cesium.EllipsoidTerrainProvider()
+      terrain: Cesium.Terrain.fromWorldTerrain()
     });
 
     viewer.scene.globe.depthTestAgainstTerrain = false;
