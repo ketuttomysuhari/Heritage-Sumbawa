@@ -373,9 +373,10 @@
     async function loadTilesetAndAdjust(centerLon, centerLat, terrainHeight) {
       try {
         setStatus("tilesDot", "tilesStatus", "warn", "Memuat 3D Tiles asset 4556790...");
-        tileset = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(4556790)
-        );
+        const tileset = viewer.scene.primitives.add(
+  await Cesium.Cesium3DTileset.fromIonAssetId(4556790),
+);
+
 
         await tileset.readyPromise;
 
