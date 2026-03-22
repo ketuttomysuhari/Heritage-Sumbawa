@@ -23,153 +23,393 @@
       --accent2:#38bdf8;
       --ok:#10b981;
       --err:#ef4444;
+      --warn:#f59e0b;
       --shadow:0 12px 34px rgba(0,0,0,.35);
     }
 
-    *{box-sizing:border-box}
-    html,body,#cesiumContainer{
-      width:100%; height:100%; margin:0; padding:0; overflow:hidden;
-      font-family:Inter,"Segoe UI",Arial,sans-serif;
-      background:var(--bg); color:var(--text);
-    }
-    #cesiumContainer{position:absolute; inset:0}
+    * { box-sizing: border-box; }
 
-    .shell{
-      position:absolute; inset:0; pointer-events:none; z-index:20;
-    }
-
-    .topbar{
-      position:absolute; top:12px; left:12px; right:12px;
-      display:flex; justify-content:space-between; gap:10px; pointer-events:none;
+    html, body, #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    .brand, .panel, .status, .legend, .icon-btn, .bottom-sheet{
-      pointer-events:auto;
-      background:var(--panel);
-      backdrop-filter:blur(12px);
-      border:1px solid var(--border);
-      box-shadow:var(--shadow);
+    #cesiumContainer {
+      position: absolute;
+      inset: 0;
     }
 
-    .brand{
-      border-radius:999px; padding:10px 14px;
-      display:flex; align-items:center; gap:10px; max-width:calc(100% - 120px);
+    .shell {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
     }
 
-    .brand-dot{
-      width:12px; height:12px; border-radius:50%;
-      background:linear-gradient(135deg,#f59e0b,#fde68a);
-      flex:0 0 auto;
+    .topbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
     }
 
-    .brand-title{font-size:15px; font-weight:800; color:#fde68a}
-    .brand-subtitle{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
-    .actions{display:flex; gap:8px; pointer-events:auto}
-    .icon-btn{
-      width:44px; height:44px; border-radius:14px; color:#fff;
-      display:grid; place-items:center; cursor:pointer; font-size:18px;
+    .brand, .panel, .status, .legend, .icon-btn {
+      pointer-events: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
     }
 
-    .panel{
-      position:absolute; top:68px; left:12px;
-      width:390px; max-width:calc(100vw - 24px); max-height:calc(100vh - 84px);
-      overflow:auto; border-radius:22px; padding:14px; transition:.28s ease;
+    .brand {
+      border-radius: 999px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: calc(100% - 120px);
     }
 
-    .panel.hidden{transform:translateX(-110%); opacity:0}
-
-    .section{
-      background:var(--panel2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px; padding:14px; margin-bottom:12px;
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #fde68a);
+      flex: 0 0 auto;
     }
 
-    .section h2{margin:0 0 10px; font-size:15px; color:#fde68a}
-    .section p,.section li{margin:0 0 8px; font-size:13px; line-height:1.65}
-    .section ul{margin:0; padding-left:18px}
-
-    .meta{
-      display:grid; grid-template-columns:110px 1fr; gap:6px 10px; font-size:13px;
-    }
-    .meta strong{color:#fcd34d}
-
-    .toolbar{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px}
-    .btn{
-      border:none; border-radius:12px; padding:11px 12px; font-size:13px; font-weight:700; cursor:pointer;
-    }
-    .btn.primary{background:linear-gradient(135deg,#f59e0b,#fbbf24); color:#111827}
-    .btn.secondary{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.08)}
-    .btn.success{background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.25)}
-    .btn.danger{background:rgba(239,68,68,.15); color:#fee2e2; border:1px solid rgba(239,68,68,.25)}
-
-    .status{
-      position:absolute; top:68px; right:12px;
-      width:290px; max-width:calc(100vw - 24px); border-radius:18px; padding:14px;
-    }
-    .status h3,.legend h3{margin:0 0 10px; font-size:14px; color:#fde68a}
-    .status-item{display:flex; gap:10px; margin-bottom:10px; font-size:13px; color:var(--muted); line-height:1.5}
-    .dot{width:12px; height:12px; border-radius:50%; margin-top:4px; background:#64748b; flex:0 0 auto}
-    .dot.ok{background:var(--ok)} .dot.err{background:var(--err)} .dot.warn{background:var(--accent)}
-
-    .legend{
-      position:absolute; right:12px; bottom:12px;
-      width:280px; max-width:calc(100vw - 24px); border-radius:18px; padding:14px;
-    }
-    .legend-item{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:13px}
-    .swatch{width:14px; height:14px; border-radius:4px; flex:0 0 auto}
-    .info-note{font-size:12px; color:var(--muted); line-height:1.55; margin-top:8px}
-
-    .loading{
-      position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center;
-      background:radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
-      transition:.3s ease;
-    }
-    .loading.hidden{opacity:0; visibility:hidden}
-    .loading-box{
-      width:min(320px, calc(100vw - 32px));
-      background:var(--panel); border:1px solid var(--border); border-radius:18px;
-      padding:18px; text-align:center; box-shadow:var(--shadow);
-    }
-    .spinner{
-      width:34px; height:34px; border:3px solid rgba(255,255,255,.18);
-      border-top-color:#fbbf24; border-radius:50%; margin:0 auto 12px; animation:spin .9s linear infinite;
-    }
-    @keyframes spin {to{transform:rotate(360deg)}}
-
-    .mobile-backdrop{display:none}
-
-    .cesium-viewer-toolbar{
-      top:68px !important;
-      right:12px !important;
+    .brand-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fde68a;
+      line-height: 1.1;
     }
 
-    @media (max-width:768px){
-      .brand{max-width:calc(100% - 108px)}
-      .panel{
-        top:auto; left:0; right:0; bottom:0; width:100%; max-width:100%;
-        max-height:76vh; border-radius:22px 22px 0 0;
-        transform:translateY(calc(100% - 92px));
-        opacity:1;
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .2s ease;
+    }
+
+    .icon-btn:hover, .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .panel {
+      position: absolute;
+      top: 68px;
+      left: 12px;
+      width: 390px;
+      max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 84px);
+      overflow: auto;
+      border-radius: 22px;
+      padding: 14px;
+      transition: .28s ease;
+    }
+
+    .panel.hidden {
+      transform: translateX(-110%);
+      opacity: 0;
+    }
+
+    .section {
+      background: var(--panel2);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #fde68a;
+    }
+
+    .section p, .section li {
+      margin: 0 0 8px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .section ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 6px 10px;
+      font-size: 13px;
+    }
+
+    .meta strong {
+      color: #fcd34d;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #111827;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .btn.success {
+      background: rgba(16,185,129,.15);
+      color: #d1fae5;
+      border: 1px solid rgba(16,185,129,.25);
+    }
+
+    .btn.danger {
+      background: rgba(239,68,68,.15);
+      color: #fee2e2;
+      border: 1px solid rgba(239,68,68,.25);
+    }
+
+    .status {
+      position: absolute;
+      top: 68px;
+      right: 12px;
+      width: 290px;
+      max-width: calc(100vw - 24px);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .status h3, .legend h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #fde68a;
+    }
+
+    .status-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-top: 4px;
+      background: #64748b;
+      flex: 0 0 auto;
+    }
+
+    .dot.ok { background: var(--ok); }
+    .dot.err { background: var(--err); }
+    .dot.warn { background: var(--warn); }
+
+    .legend {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      width: 280px;
+      max-width: calc(100vw - 24px);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .info-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 8px;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
+      transition: .3s ease;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-box {
+      width: min(320px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(255,255,255,.18);
+      border-top-color: #fbbf24;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      animation: spin .9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mobile-backdrop {
+      display: none;
+    }
+
+    .cesium-viewer-toolbar {
+      top: 68px !important;
+      right: 12px !important;
+    }
+
+    .cesium-infoBox {
+      max-width: 360px;
+    }
+
+    @media (max-width: 768px) {
+      .brand {
+        max-width: calc(100% - 108px);
       }
-      .panel.open{transform:translateY(0)}
-      .panel.hidden{transform:translateY(calc(100% - 92px)); opacity:1}
-      .mobile-backdrop{
-        display:block; position:absolute; inset:0; z-index:19;
-        background:rgba(0,0,0,.2); opacity:0; pointer-events:none; transition:.25s ease;
+
+      .panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 76vh;
+        border-radius: 22px 22px 0 0;
+        transform: translateY(calc(100% - 92px));
+        opacity: 1;
       }
-      .mobile-backdrop.active{opacity:1; pointer-events:auto}
-      .status{
-        top:auto; right:12px; left:12px; width:auto; bottom:96px;
+
+      .panel.open {
+        transform: translateY(0);
       }
-      .legend{
-        right:12px; left:12px; width:auto; bottom:12px;
+
+      .panel.hidden {
+        transform: translateY(calc(100% - 92px));
+        opacity: 1;
       }
-      .toolbar{grid-template-columns:1fr}
-      .meta{grid-template-columns:1fr}
-      .cesium-viewer-toolbar{
-        top:64px !important;
-        right:10px !important;
+
+      .mobile-backdrop {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: 19;
+        background: rgba(0,0,0,.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: .25s ease;
+      }
+
+      .mobile-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .status {
+        top: auto;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 96px;
+      }
+
+      .legend {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 12px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .cesium-viewer-toolbar {
+        top: 64px !important;
+        right: 10px !important;
       }
     }
   </style>
@@ -186,9 +426,10 @@
           <div class="brand-subtitle">Bala Datu Ranga • 3D Tiles • Persil Manual • Semantik</div>
         </div>
       </div>
+
       <div class="actions">
-        <button class="icon-btn" id="togglePanelBtn" title="Panel info">☰</button>
-        <button class="icon-btn" id="homeBtn" title="Zoom situs">⌖</button>
+        <button class="icon-btn" id="togglePanelBtn" title="Panel">☰</button>
+        <button class="icon-btn" id="homeBtn" title="Zoom">⌖</button>
       </div>
     </div>
 
@@ -198,8 +439,9 @@
       <div class="section">
         <h2>Deskripsi</h2>
         <p>
-          Halaman ini menampilkan Bala Datu Ranga sebagai heritage digital Sumbawa dengan kombinasi
-          3D Tiles Cesium Ion, persil yang ditulis manual di dalam HTML, dan informasi semantik interaktif.
+          Visualisasi ini difokuskan pada model 3D Tiles Bala Datu Ranga dari Cesium Ion Asset
+          <b>4556790</b>. Persil situs ditulis manual di dalam file HTML agar tidak perlu memuat
+          file GeoJSON eksternal.
         </p>
       </div>
 
@@ -207,30 +449,33 @@
         <h2>Informasi Semantik</h2>
         <div class="meta">
           <strong>Nama</strong><span>Bala Datu Ranga</span>
-          <strong>Kategori</strong><span>Heritage / arsitektur tradisional / situs budaya</span>
+          <strong>Kategori</strong><span>Heritage / situs budaya / arsitektur tradisional</span>
           <strong>Wilayah</strong><span>Sumbawa, Nusa Tenggara Barat, Indonesia</span>
-          <strong>Sumber persil</strong><span>Koordinat LineString ditulis manual dari data GeoJSON</span>
+          <strong>Model utama</strong><span>Cesium 3D Tiles Ion Asset 4556790</span>
         </div>
       </div>
 
       <div class="section">
-        <h2>Koordinat</h2>
+        <h2>Koordinat Persil</h2>
         <div class="meta">
           <strong>Pusat lon</strong><span id="centerLon">-</span>
           <strong>Pusat lat</strong><span id="centerLat">-</span>
-          <strong>Terrain h</strong><span id="terrainHeight">-</span>
-          <strong>Tileset offset</strong><span id="tilesetOffset">-</span>
           <strong>Extent</strong><span id="extentText">-</span>
+          <strong>Jumlah titik</strong><span id="pointCount">-</span>
         </div>
       </div>
 
       <div class="section">
-        <h2>Catatan Teknis</h2>
+        <h2>Sejarah Singkat</h2>
+        <p>
+          Bala Datu Ranga ditampilkan sebagai bagian dari heritage digital Sumbawa yang dapat
+          dikembangkan lebih lanjut dengan data sejarah, arsitektur, fungsi bangunan, dan nilai
+          budaya lokal.
+        </p>
         <ul>
-          <li>Persil ditulis manual langsung di index.html.</li>
-          <li>3D Tiles di-offset terhadap terrain supaya lebih pas dengan permukaan Cesium.</li>
-          <li>Persil dapat ditampilkan di atas terrain atau sedikit dinaikkan agar terlihat jelas.</li>
-          <li>Mengikuti bentuk mesh 3D Tiles secara persis memerlukan data tinggi tambahan, bukan hanya LineString 2D.</li>
+          <li>Representasi spasial situs heritage.</li>
+          <li>Integrasi model 3D dan batas persil.</li>
+          <li>Dukungan untuk museum digital dan edukasi budaya.</li>
         </ul>
       </div>
 
@@ -256,12 +501,12 @@
 
     <div class="legend">
       <h3>Legenda</h3>
-      <div class="legend-item"><span class="swatch" style="background:#38bdf8"></span> Persil / batas situs</div>
+      <div class="legend-item"><span class="swatch" style="background:#38bdf8"></span> Persil Bala Datu Ranga</div>
       <div class="legend-item"><span class="swatch" style="background:#f59e0b"></span> Titik pusat situs</div>
       <div class="legend-item"><span class="swatch" style="background:#10b981"></span> 3D Tiles heritage</div>
       <div class="info-note">
-        Koordinat persil ditulis manual dari data GeoJSON Bala Datu Ranga. 3D Tiles diberi offset vertikal
-        terhadap terrain agar lebih pas secara visual.
+        Versi ini tidak menggunakan terrain terlebih dahulu, sehingga fokus pada tampilan model
+        3D Tiles dan batas persil situs.
       </div>
     </div>
 
@@ -269,7 +514,7 @@
       <div class="loading-box">
         <div class="spinner"></div>
         <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Heritage Sumbawa</div>
-        <div style="font-size:13px;color:#cbd5e1;line-height:1.5;">Menyiapkan Cesium, terrain, 3D Tiles, dan persil manual Bala Datu Ranga.</div>
+        <div style="font-size:13px;color:#cbd5e1;line-height:1.5;">Menyiapkan Cesium, 3D Tiles, dan persil manual Bala Datu Ranga.</div>
       </div>
     </div>
   </div>
@@ -289,10 +534,11 @@
       selectionIndicator: true,
       timeline: false,
       navigationHelpButton: true,
-      shouldAnimate: true
+      shouldAnimate: true,
+      terrainProvider: new Cesium.EllipsoidTerrainProvider()
     });
 
-    viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.depthTestAgainstTerrain = false;
     viewer.scene.skyAtmosphere.show = true;
     viewer.scene.fxaa = true;
 
@@ -304,8 +550,7 @@
     let parcelEntities = [];
     let siteCenterEntity = null;
 
-    // Koordinat manual dari GeoJSON Bala Datu Ranga
-    // Sumber: file GeoJSON yang diunggah user
+    // Koordinat manual dari data GeoJSON Bala Datu Ranga
     const parcelCoords = [
       [117.42698601968266, -8.50605959189852],
       [117.42705432028407, -8.506082436583483],
@@ -341,107 +586,32 @@
       };
     }
 
-    async function sampleTerrainHeight(lon, lat) {
-      const cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
-      try {
-        const result = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [cartographic]);
-        return result[0]?.height ?? 0;
-      } catch (e) {
-        console.warn("Terrain sample gagal:", e);
-        return 0;
-      }
-    }
-
-    function buildSemanticDescription(centerLon, centerLat, terrainHeight, offsetMeters) {
+    function buildCenterDescription(centerLon, centerLat) {
       return `
         <div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.6;">
           <h2 style="margin:0 0 8px;color:#b45309;">Bala Datu Ranga</h2>
-          <p><b>Kategori:</b> Heritage / arsitektur tradisional / situs budaya</p>
-          <p><b>Lokasi:</b> Sumbawa, Nusa Tenggara Barat, Indonesia</p>
+          <p><b>Kategori:</b> Heritage / situs budaya / arsitektur tradisional</p>
           <p><b>Koordinat pusat:</b><br>
             Longitude: ${f(centerLon)}<br>
-            Latitude: ${f(centerLat)}<br>
-            Terrain: ${f(terrainHeight, 2)} m
+            Latitude: ${f(centerLat)}
           </p>
-          <p><b>Informasi persil:</b> Persil ditulis manual dari geometri LineString Bala Datu Ranga dan divisualisasikan sebagai batas spasial situs.</p>
-          <p><b>Offset 3D Tiles:</b> ${f(offsetMeters, 2)} m terhadap posisi awal asset, agar model lebih sesuai dengan terrain Cesium.</p>
-          <p><b>Catatan:</b> Batas persil mengikuti terrain dan dapat diberi offset visual. Mengikuti bentuk mesh 3D Tiles secara presisi memerlukan data tinggi tambahan.</p>
+          <p><b>Deskripsi:</b> Visualisasi heritage Bala Datu Ranga menggunakan 3D Tiles Cesium dan persil manual untuk interpretasi spasial serta semantik.</p>
         </div>
       `;
     }
 
-    async function loadTilesetAndAdjust(centerLon, centerLat, terrainHeight) {
+    function createManualParcel() {
       try {
-        setStatus("tilesDot", "tilesStatus", "warn", "Memuat 3D Tiles asset 4556790...");
-        const tileset = viewer.scene.primitives.add(
-  await Cesium.Cesium3DTileset.fromIonAssetId(4556790),
-);
-
-
-        await tileset.readyPromise;
-
-        const boundingSphere = tileset.boundingSphere;
-        const cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
-
-        const surface = Cesium.Cartesian3.fromRadians(
-          cartographic.longitude,
-          cartographic.latitude,
-          terrainHeight
-        );
-
-        // offset awal agar tileset naik sedikit dari terrain
-        const desiredHeight = terrainHeight + 1.5;
-        const offset = desiredHeight - cartographic.height;
-
-        const offsetPosition = Cesium.Cartesian3.fromRadians(
-          cartographic.longitude,
-          cartographic.latitude,
-          cartographic.height + offset
-        );
-
-        const translation = Cesium.Cartesian3.subtract(
-          offsetPosition,
-          Cesium.Cartesian3.fromRadians(
-            cartographic.longitude,
-            cartographic.latitude,
-            cartographic.height
-          ),
-          new Cesium.Cartesian3()
-        );
-
-        tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-
-        document.getElementById("tilesetOffset").textContent = `${f(offset, 2)} m`;
-        setStatus("tilesDot", "tilesStatus", "ok", `3D Tiles berhasil dimuat. Offset vertikal diterapkan: ${f(offset, 2)} m.`);
-        return offset;
-      } catch (error) {
-        console.error("Tileset error:", error);
-        document.getElementById("tilesetOffset").textContent = "gagal";
-        setStatus("tilesDot", "tilesStatus", "err", "3D Tiles gagal dimuat. Cek akses asset 4556790 dan token Ion.");
-        return 0;
-      }
-    }
-
-    async function createManualParcel() {
-      try {
-        setStatus("parcelDot", "parcelStatus", "warn", "Membangun persil manual dari koordinat...");
+        setStatus("parcelDot", "parcelStatus", "warn", "Membangun persil manual...");
 
         const info = computeCenterAndExtent(parcelCoords);
-        const terrainHeight = await sampleTerrainHeight(info.centerLon, info.centerLat);
 
         document.getElementById("centerLon").textContent = f(info.centerLon);
         document.getElementById("centerLat").textContent = f(info.centerLat);
-        document.getElementById("terrainHeight").textContent = `${f(terrainHeight, 2)} m`;
         document.getElementById("extentText").textContent =
           `Min (${f(info.minLon)}, ${f(info.minLat)}) - Max (${f(info.maxLon)}, ${f(info.maxLat)})`;
+        document.getElementById("pointCount").textContent = parcelCoords.length;
 
-        const parcelOffset = 0.3; // supaya garis sedikit terlihat di atas terrain
-        const flatArray = [];
-        for (const [lon, lat] of parcelCoords) {
-          flatArray.push(lon, lat, terrainHeight + parcelOffset);
-        }
-
-        // polygon tertutup
         const polygonCoords = parcelCoords.slice();
         const first = parcelCoords[0];
         const last = parcelCoords[parcelCoords.length - 1];
@@ -449,18 +619,16 @@
           polygonCoords.push(first);
         }
 
-        const polygonFlatArray = [];
+        const polygonFlat = [];
         for (const [lon, lat] of polygonCoords) {
-          polygonFlatArray.push(lon, lat, terrainHeight + 0.15);
+          polygonFlat.push(lon, lat, 0.8);
         }
-
-        const semanticDescription = buildSemanticDescription(info.centerLon, info.centerLat, terrainHeight, 0);
 
         const polygonEntity = viewer.entities.add({
           name: "Persil Bala Datu Ranga",
           polygon: {
-            hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(polygonFlatArray),
-            material: Cesium.Color.DEEPSKYBLUE.withAlpha(0.22),
+            hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(polygonFlat),
+            material: Cesium.Color.DEEPSKYBLUE.withAlpha(0.24),
             outline: true,
             outlineColor: Cesium.Color.WHITE,
             perPositionHeight: true
@@ -468,18 +636,18 @@
           description: `
             <div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.6;">
               <h2 style="margin:0 0 8px;color:#1d4ed8;">Persil Bala Datu Ranga</h2>
-              <p><b>Tipe geometri:</b> Polygon dari koordinat manual</p>
+              <p><b>Tipe geometri:</b> Polygon manual dari koordinat persil</p>
               <p><b>Jumlah titik:</b> ${parcelCoords.length}</p>
-              <p><b>Fungsi:</b> Representasi batas situs heritage untuk visualisasi spasial dan interpretasi semantik.</p>
-              <p><b>Catatan:</b> Geometri ini berasal dari LineString GeoJSON yang dituliskan manual ke dalam index.html.</p>
+              <p><b>Keterangan:</b> Persil ini ditulis langsung di dalam index.html tanpa import file GeoJSON.</p>
+              <p><b>Makna semantik:</b> Menunjukkan batas spasial situs heritage Bala Datu Ranga.</p>
             </div>
           `
         });
 
-        const lineEntity = viewer.entities.add({
+        const polylineEntity = viewer.entities.add({
           name: "Batas Persil Bala Datu Ranga",
           polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights(polygonFlatArray),
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights(polygonFlat),
             width: 5,
             material: Cesium.Color.DEEPSKYBLUE,
             clampToGround: false
@@ -488,15 +656,14 @@
             <div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.6;">
               <h2 style="margin:0 0 8px;color:#1d4ed8;">Batas Persil Bala Datu Ranga</h2>
               <p><b>Tipe:</b> Garis batas persil</p>
-              <p><b>Visual:</b> Garis dinaikkan sedikit dari terrain agar jelas terlihat.</p>
-              <p><b>Interpretasi:</b> Menunjukkan batas situs heritage pada lingkungan 3D Cesium.</p>
+              <p><b>Fungsi:</b> Menampilkan batas situs secara lebih jelas di atas model 3D.</p>
             </div>
           `
         });
 
         siteCenterEntity = viewer.entities.add({
           name: "Pusat Situs Bala Datu Ranga",
-          position: Cesium.Cartesian3.fromDegrees(info.centerLon, info.centerLat, terrainHeight + 2.0),
+          position: Cesium.Cartesian3.fromDegrees(info.centerLon, info.centerLat, 3.0),
           point: {
             pixelSize: 14,
             color: Cesium.Color.ORANGE,
@@ -513,13 +680,12 @@
             pixelOffset: new Cesium.Cartesian2(0, -28),
             disableDepthTestDistance: Number.POSITIVE_INFINITY
           },
-          description: semanticDescription
+          description: buildCenterDescription(info.centerLon, info.centerLat)
         });
 
-        parcelEntities = [polygonEntity, lineEntity, siteCenterEntity];
-
-        setStatus("parcelDot", "parcelStatus", "ok", "Persil manual berhasil dibuat dari koordinat GeoJSON.");
-        return { info, terrainHeight };
+        parcelEntities = [polygonEntity, polylineEntity, siteCenterEntity];
+        setStatus("parcelDot", "parcelStatus", "ok", "Persil manual berhasil dibuat.");
+        return info;
       } catch (error) {
         console.error("Parcel error:", error);
         setStatus("parcelDot", "parcelStatus", "err", "Persil manual gagal dibuat.");
@@ -527,40 +693,50 @@
       }
     }
 
+    async function loadTileset() {
+      try {
+        setStatus("tilesDot", "tilesStatus", "warn", "Memuat 3D Tiles asset 4556790...");
+        tileset = viewer.scene.primitives.add(
+          await Cesium.Cesium3DTileset.fromIonAssetId(4556790)
+        );
+
+        setStatus("tilesDot", "tilesStatus", "ok", "3D Tiles berhasil dimuat.");
+        return true;
+      } catch (error) {
+        console.error("Tileset error:", error);
+        setStatus("tilesDot", "tilesStatus", "err", "3D Tiles gagal dimuat. Cek token dan akses asset.");
+        return false;
+      }
+    }
+
+    async function setInitialView(info) {
+      try {
+        setStatus("cameraDot", "cameraStatus", "warn", "Mengarahkan kamera ke situs...");
+        if (parcelEntities.length) {
+          await viewer.flyTo(parcelEntities, {
+            duration: 2.3,
+            offset: new Cesium.HeadingPitchRange(0, -0.65, 180)
+          });
+        } else if (tileset) {
+          await viewer.zoomTo(tileset);
+        } else if (info) {
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(info.centerLon, info.centerLat, 250)
+          });
+        }
+        setStatus("cameraDot", "cameraStatus", "ok", "Kamera berhasil diarahkan.");
+      } catch (error) {
+        console.error("Camera error:", error);
+        setStatus("cameraDot", "cameraStatus", "err", "Kamera gagal diarahkan.");
+      }
+    }
+
     async function initScene() {
       setStatus("tokenDot", "tokenStatus", "ok", "Token Cesium Ion terpasang.");
 
-      const parcelResult = await createManualParcel();
-      let tilesetOffset = 0;
-
-      if (parcelResult) {
-        tilesetOffset = await loadTilesetAndAdjust(
-          parcelResult.info.centerLon,
-          parcelResult.info.centerLat,
-          parcelResult.terrainHeight
-        );
-
-        if (siteCenterEntity) {
-          siteCenterEntity.description = buildSemanticDescription(
-            parcelResult.info.centerLon,
-            parcelResult.info.centerLat,
-            parcelResult.terrainHeight,
-            tilesetOffset
-          );
-        }
-
-        try {
-          setStatus("cameraDot", "cameraStatus", "warn", "Mengarahkan kamera ke situs...");
-          await viewer.flyTo(parcelEntities, {
-            duration: 2.5,
-            offset: new Cesium.HeadingPitchRange(0, -0.65, 180)
-          });
-          setStatus("cameraDot", "cameraStatus", "ok", "Kamera berhasil diarahkan.");
-        } catch (e) {
-          console.error(e);
-          setStatus("cameraDot", "cameraStatus", "err", "Kamera gagal diarahkan.");
-        }
-      }
+      const info = createManualParcel();
+      await loadTileset();
+      await setInitialView(info);
 
       const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
       handler.setInputAction(function (movement) {
@@ -595,6 +771,7 @@
     }
 
     document.getElementById("togglePanelBtn").addEventListener("click", togglePanel);
+
     document.getElementById("homeBtn").addEventListener("click", async () => {
       if (parcelEntities.length) {
         await viewer.flyTo(parcelEntities, {
@@ -612,15 +789,17 @@
           duration: 2.0,
           offset: new Cesium.HeadingPitchRange(0, -0.65, 180)
         });
+      } else if (tileset) {
+        await viewer.zoomTo(tileset);
       }
     });
 
     document.getElementById("showParcelBtn").addEventListener("click", () => {
-      parcelEntities.forEach(e => e.show = true);
+      parcelEntities.forEach(entity => entity.show = true);
     });
 
     document.getElementById("hideParcelBtn").addEventListener("click", () => {
-      parcelEntities.forEach(e => e.show = false);
+      parcelEntities.forEach(entity => entity.show = false);
     });
 
     document.getElementById("showTilesBtn").addEventListener("click", () => {
