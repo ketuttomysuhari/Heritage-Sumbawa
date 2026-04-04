@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Visualisasi Point Cloud CesiumJS</title>
+  
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  
+  <style>
+    /* Mengatur agar container mengambil seluruh layar penuh (fullscreen) */
+    html, body, #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="cesiumContainer"></div>
+  
+  <script>
+    // CATATAN: Masukkan Access Token Cesium Ion Anda di bawah ini jika data Anda bersifat privat / memerlukan autentikasi.
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik';
+
+    // Inisialisasi Cesium Viewer di dalam elemen div "cesiumContainer"
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      infoBox: false,       // Menonaktifkan kotak info saat elemen diklik (opsional)
+      selectionIndicator: false // Menonaktifkan indikator pilihan (opsional)
+    });
+
+    // Menggunakan IIFE Async (Immediately Invoked Function Expression) karena kode Anda membutuhkan await
+    (async function initPointCloud() {
+      try {
+        // 1. Memuat Tileset sesuai dengan kode yang Anda berikan
+        const tileset = viewer.scene.primitives.add(
+          await Cesium.Cesium3DTileset.fromIonAssetId(4596657)
+        );
+
+        // 2. Mengatur ukuran point (point size) menjadi 2
+        tileset.style = new Cesium.Cesium3DTileStyle({
+          pointSize: 2.0
+        });
+
+        // 3. Mengarahkan dan memperbesar kamera ke tileset secara otomatis
+        await viewer.zoomTo(tileset);
+        
+      } catch (error) {
+        console.error("Gagal memuat point cloud:", error);
+        alert("Gagal memuat data point cloud. Periksa console untuk detailnya.");
+      }
+    })();
+  </script>
+</body>
+</html>
