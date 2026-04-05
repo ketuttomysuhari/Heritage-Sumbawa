@@ -37,9 +37,11 @@
     (async function initPointCloud() {
       try {
         // 1. Memuat Tileset sesuai dengan kode yang Anda berikan
+
         const tileset = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(4596657)
+          await Cesium.Cesium3DTileset.fromIonAssetId(4597324),
         );
+
 
         // 2. Mengatur ukuran point (point size) menjadi 2
         tileset.style = new Cesium.Cesium3DTileStyle({
