@@ -6,10 +6,7 @@
   <title>Heritage Sumbawa - Bala Datu Ranga (Multi-Layer)</title>
 
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
-  <link
-    href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css"
-    rel="stylesheet"
-  />
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
 
   <style>
     :root{
@@ -19,310 +16,105 @@
       --border:rgba(255,255,255,.1);
       --text:#f8fafc;
       --muted:#cbd5e1;
-      --accent:#f59e0b;
-      --accent2:#38bdf8;
-      --ok:#10b981;
-      --err:#ef4444;
-      --warn:#f59e0b;
       --shadow:0 12px 34px rgba(0,0,0,.35);
     }
 
     * { box-sizing: border-box; }
 
     html, body, #cesiumContainer {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
+      width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg); color: var(--text);
     }
 
-    #cesiumContainer {
-      position: absolute;
-      inset: 0;
-    }
+    #cesiumContainer { position: absolute; inset: 0; }
 
-    .shell {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 20;
-    }
+    .shell { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
 
     .topbar {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      right: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      pointer-events: none;
+      position: absolute; top: 12px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; gap: 10px; pointer-events: none;
     }
 
     .brand, .panel, .legend, .icon-btn {
-      pointer-events: auto;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
+      pointer-events: auto; background: var(--panel); border: 1px solid var(--border);
+      backdrop-filter: blur(12px); box-shadow: var(--shadow);
     }
 
     .brand {
-      border-radius: 999px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: calc(100% - 120px);
+      border-radius: 999px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;
     }
 
     .brand-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f59e0b, #fde68a);
-      flex: 0 0 auto;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #fde68a); flex: 0 0 auto;
     }
 
-    .brand-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #fde68a;
-      line-height: 1.1;
-    }
+    .brand-title { font-size: 15px; font-weight: 800; color: #fde68a; line-height: 1.1; }
+    .brand-subtitle { font-size: 12px; color: var(--muted); }
 
-    .brand-subtitle {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      pointer-events: auto;
-    }
-
+    .actions { display: flex; gap: 8px; pointer-events: auto; }
     .icon-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      cursor: pointer;
-      font-size: 18px;
-      transition: .2s ease;
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+      color: #fff; cursor: pointer; font-size: 18px; transition: .2s ease;
     }
-
-    .icon-btn:hover, .btn:hover {
-      transform: translateY(-1px);
-    }
+    .icon-btn:hover, .btn:hover { transform: translateY(-1px); }
 
     .panel {
-      position: absolute;
-      top: 68px;
-      left: 12px;
-      width: 390px;
-      max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 84px);
-      overflow: auto;
-      border-radius: 22px;
-      padding: 14px;
-      transition: .28s ease;
+      position: absolute; top: 68px; left: 12px; width: 390px;
+      max-width: calc(100vw - 24px); max-height: calc(100vh - 84px); overflow: auto;
+      border-radius: 22px; padding: 14px; transition: .28s ease;
     }
 
-    .panel.hidden {
-      transform: translateX(-110%);
-      opacity: 0;
-    }
+    .panel.hidden { transform: translateX(-110%); opacity: 0; }
 
     .section {
-      background: var(--panel2);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
+      background: var(--panel2); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 14px; margin-bottom: 12px;
     }
 
-    .section h2 {
-      margin: 0 0 10px;
-      font-size: 15px;
-      color: #fde68a;
-    }
+    .section h2 { margin: 0 0 10px; font-size: 15px; color: #fde68a; }
+    .section p { margin: 0 0 8px; font-size: 13px; line-height: 1.65; }
 
-    .section p, .section li {
-      margin: 0 0 8px;
-      font-size: 13px;
-      line-height: 1.65;
-    }
+    .meta { display: grid; grid-template-columns: 112px 1fr; gap: 6px 10px; font-size: 13px; }
+    .meta strong { color: #fcd34d; }
 
-    .section ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: 112px 1fr;
-      gap: 6px 10px;
-      font-size: 13px;
-    }
-
-    .meta strong {
-      color: #fcd34d;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
+    .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 
     .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
+      border: none; border-radius: 12px; padding: 11px 12px; font-size: 13px;
+      font-weight: 700; cursor: pointer;
     }
-
-    .btn.primary {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
-      color: #111827;
-    }
-
-    .btn.secondary {
-      background: rgba(255,255,255,.08);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .btn.success {
-      background: rgba(16,185,129,.15);
-      color: #d1fae5;
-      border: 1px solid rgba(16,185,129,.25);
-    }
-
-    .btn.danger {
-      background: rgba(239,68,68,.15);
-      color: #fee2e2;
-      border: 1px solid rgba(239,68,68,.25);
-    }
+    .btn.primary { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #111827; }
+    .btn.success { background: rgba(16,185,129,.15); color: #d1fae5; border: 1px solid rgba(16,185,129,.25); }
+    .btn.danger { background: rgba(239,68,68,.15); color: #fee2e2; border: 1px solid rgba(239,68,68,.25); }
 
     .legend {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      width: 280px;
-      max-width: calc(100vw - 24px);
-      border-radius: 18px;
-      padding: 14px;
+      position: absolute; right: 12px; bottom: 12px; border-radius: 18px; padding: 14px;
     }
-
-    .legend h3 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: #fde68a;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    .swatch {
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      flex: 0 0 auto;
-    }
+    .legend h3 { margin: 0 0 10px; font-size: 14px; color: #fde68a; }
+    .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+    .swatch { width: 14px; height: 14px; border-radius: 4px; flex: 0 0 auto; }
 
     .loading {
-      position: absolute;
-      inset: 0;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
-      transition: .3s ease;
+      position: absolute; inset: 0; z-index: 30; display: flex;
+      align-items: center; justify-content: center; background: radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
     }
-
-    .loading.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loading-box {
-      width: min(320px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
+    .loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loading-box { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; text-align: center; }
     .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3px solid rgba(255,255,255,.18);
-      border-top-color: #fbbf24;
-      border-radius: 50%;
-      margin: 0 auto 12px;
-      animation: spin .9s linear infinite;
+      width: 34px; height: 34px; border: 3px solid rgba(255,255,255,.18);
+      border-top-color: #fbbf24; border-radius: 50%; margin: 0 auto 12px; animation: spin .9s linear infinite;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .mobile-backdrop {
-      display: none;
-    }
-
-    .cesium-viewer-toolbar {
-      top: 68px !important;
-      right: 12px !important;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 768px) {
-      .brand {
-        max-width: calc(100% - 108px);
-      }
       .panel {
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        max-width: 100%;
-        max-height: 76vh;
-        border-radius: 22px 22px 0 0;
-        transform: translateY(calc(100% - 92px));
-        opacity: 1;
+        top: auto; left: 0; right: 0; bottom: 0; width: 100%;
+        max-height: 76vh; border-radius: 22px 22px 0 0;
+        transform: translateY(calc(100% - 92px)); opacity: 1;
       }
       .panel.open { transform: translateY(0); }
-      .panel.hidden { transform: translateY(calc(100% - 92px)); opacity: 1; }
-      .mobile-backdrop {
-        display: block; position: absolute; inset: 0; z-index: 19;
-        background: rgba(0,0,0,.2); opacity: 0; pointer-events: none; transition: .25s ease;
-      }
-      .mobile-backdrop.active { opacity: 1; pointer-events: auto; }
-      .legend { right: 12px; left: 12px; width: auto; bottom: 12px; }
-      .cesium-viewer-toolbar { top: 64px !important; right: 10px !important; }
     }
   </style>
 </head>
@@ -335,41 +127,30 @@
         <div class="brand-dot"></div>
         <div>
           <div class="brand-title">Heritage Sumbawa</div>
-          <div class="brand-subtitle">Bala Datu Ranga • Multi-Layer 3D Tiles</div>
+          <div class="brand-subtitle">Bala Datu Ranga • PC & Splat</div>
         </div>
       </div>
-
       <div class="actions">
         <button class="icon-btn" id="togglePanelBtn" title="Panel">☰</button>
-        <button class="icon-btn" id="homeBtn" title="Zoom Utama">⌖</button>
       </div>
     </div>
 
-    <div class="mobile-backdrop" id="mobileBackdrop"></div>
-
     <aside class="panel hidden" id="sidePanel">
-      <div class="section">
-        <h2>Deskripsi</h2>
-        <p>
-          Visualisasi ini menampilkan dua model 3D Tiles Bala Datu Ranga. Layer 1 merupakan Point Cloud standar, sementara Layer 2 menggunakan data Gaussian Splatting.
-        </p>
-      </div>
-
       <div class="section">
         <h2>Informasi Semantik</h2>
         <div class="meta">
           <strong>Nama</strong><span>Bala Datu Ranga</span>
-          <strong>Kategori</strong><span>Heritage / Arsitektur Tradisional</span>
-          <strong>Lokasi</strong><span>Sumbawa, NTB</span>
-          <strong>Aset 1 (PC)</strong><span>Ion Asset 4597324</span>
-          <strong>Aset 2 (GS)</strong><span>Ion Asset 4599585</span>
+          <strong>Kategori</strong><span>Situs Budaya</span>
+          <strong>Aset 1 (PC)</strong><span>4597324</span>
+          <strong>Aset 2 (GS)</strong><span>4599585</span>
         </div>
       </div>
 
       <div class="section">
         <h2>Kontrol Layer</h2>
         <div class="toolbar">
-          <button class="btn primary" id="zoomSiteBtn" style="grid-column: span 2;">Zoom ke Situs Utama</button>
+          <button class="btn primary" id="zoomPCBtn" style="grid-column: span 1;">Zoom ke Aset 1</button>
+          <button class="btn primary" id="zoomGSBtn" style="grid-column: span 1;">Zoom ke Aset 2</button>
           
           <button class="btn success" id="showLayer1Btn">Tampilkan L1 (PC)</button>
           <button class="btn danger" id="hideLayer1Btn">Sembunyikan L1</button>
@@ -392,16 +173,15 @@
     <div class="loading" id="loadingOverlay">
       <div class="loading-box">
         <div class="spinner"></div>
-        <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Heritage Sumbawa</div>
-        <div style="font-size:13px;color:#cbd5e1;line-height:1.5;">
-          Menyiapkan Cesium, Point Cloud, dan Gaussian Splat...
-        </div>
+        <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Aset</div>
+        <div style="font-size:13px;color:#cbd5e1;">Menyiapkan Cesium, Point Cloud, & Splat...</div>
       </div>
     </div>
   </div>
 
   <script>
-    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik";
+    // Menggunakan Access Token dari kode Anda yang berhasil
+    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjOWRmOThmYS1iYjhiLTQ4YzgtOTAzMC1hYjE5OGZmZDExMGUiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0MTMxMzB9.oiJJytiAc-uPwL9DTfzg-iulsz8DixZOtWrbtO1K9rI";
 
     const viewer = new Cesium.Viewer("cesiumContainer", {
       animation: false,
@@ -414,139 +194,97 @@
       sceneModePicker: true,
       selectionIndicator: false,
       timeline: false,
-      navigationHelpButton: true,
+      navigationHelpButton: false,
       shouldAnimate: true,
       terrain: Cesium.Terrain.fromWorldTerrain()
     });
 
     viewer.scene.globe.depthTestAgainstTerrain = false;
-    viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.fxaa = true;
 
-    const sidePanel = document.getElementById("sidePanel");
-    const mobileBackdrop = document.getElementById("mobileBackdrop");
-    const loadingOverlay = document.getElementById("loadingOverlay");
-
-    let tileset1 = null;
-    let tileset2 = null;
+    let tileset1 = null; // Point Cloud
+    let tileset2 = null; // Gaussian Splat
 
     async function loadTilesets() {
-      // 1. Memuat Layer 1 (Point Cloud 4597324)
+      // 1. Memuat Layer 1 (Point Cloud Biasa)
       try {
         tileset1 = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
         viewer.scene.primitives.add(tileset1);
         
-        // Point size HANYA diaplikasikan ke point cloud biasa
+        // Memberikan ukuran titik 2.0 untuk point cloud standar
         tileset1.style = new Cesium.Cesium3DTileStyle({
           pointSize: 2.0
         });
       } catch (error) {
-        console.error("Gagal memuat Layer 1:", error);
+        console.error("Gagal memuat Layer 1 (PC):", error);
       }
 
-      // 2. Memuat Layer 2 (Gaussian Splat 4599585)
+      // 2. Memuat Layer 2 (Gaussian Splat) menggunakan logika dari kode Anda yang berhasil
       try {
-        tileset2 = await Cesium.Cesium3DTileset.fromIonAssetId(4599585, {
-          // Optimasi khusus untuk Gaussian Splat agar lebih cepat render
-          maximumScreenSpaceError: 8, 
-          backFaceCulling: false
-        });
+        tileset2 = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
         viewer.scene.primitives.add(tileset2);
-        
-        // PENTING: Jangan pasang style pointSize di sini, karena akan merusak quad splat
+
+        // Menerapkan defaultStyle dari server Ion (kunci untuk Gaussian Splat)
+        const extras = tileset2.asset.extras;
+        if (
+          Cesium.defined(extras) &&
+          Cesium.defined(extras.ion) &&
+          Cesium.defined(extras.ion.defaultStyle)
+        ) {
+          tileset2.style = new Cesium.Cesium3DTileStyle(extras.ion.defaultStyle);
+        }
       } catch (error) {
-        console.error("Gagal memuat Layer 2:", error);
+        console.error("Gagal memuat Layer 2 (Splat):", error);
       }
     }
 
     async function initScene() {
       await loadTilesets();
       
-      // Default auto-zoom ke layer mana saja yang tersedia pertama kali
-      if (tileset1) {
-        await viewer.zoomTo(tileset1);
-      } else if (tileset2) {
-        await viewer.zoomTo(tileset2);
-      }
-
-      loadingOverlay.classList.add("hidden");
-    }
-
-    function togglePanel() {
-      if (window.innerWidth <= 768) {
-        const isOpen = sidePanel.classList.contains("open");
-        if (isOpen) {
-          sidePanel.classList.remove("open");
-          mobileBackdrop.classList.remove("active");
-        } else {
-          sidePanel.classList.add("open");
-          sidePanel.classList.remove("hidden");
-          mobileBackdrop.classList.add("active");
-        }
-      } else {
-        sidePanel.classList.toggle("hidden");
-      }
-    }
-
-    document.getElementById("togglePanelBtn").addEventListener("click", togglePanel);
-
-    // Navigasi Utama
-    document.getElementById("homeBtn").addEventListener("click", async () => {
-      if (tileset1 && tileset1.show) await viewer.zoomTo(tileset1);
-      else if (tileset2 && tileset2.show) await viewer.zoomTo(tileset2);
-    });
-
-    document.getElementById("zoomSiteBtn").addEventListener("click", async () => {
-      if (tileset1 && tileset1.show) await viewer.zoomTo(tileset1);
-      else if (tileset2 && tileset2.show) await viewer.zoomTo(tileset2);
-    });
-
-    // Kontrol Visibilitas Layer 1
-    document.getElementById("showLayer1Btn").addEventListener("click", async () => {
-      if (tileset1) {
-        tileset1.show = true;
-        await viewer.zoomTo(tileset1); // Langsung auto-zoom ke layer ini
-      }
-    });
-    document.getElementById("hideLayer1Btn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = false;
-    });
-
-    // Kontrol Visibilitas Layer 2 (Gaussian Splat)
-    document.getElementById("showLayer2Btn").addEventListener("click", async () => {
+      // Setelah termuat, fokuskan kamera ke salah satu tileset (Prioritas Layer 2 / GS)
       if (tileset2) {
-        tileset2.show = true;
-        await viewer.zoomTo(tileset2); // Memaksa kamera mencari lokasi Gaussian Splat
+        await viewer.zoomTo(tileset2);
+      } else if (tileset1) {
+        await viewer.zoomTo(tileset1);
       }
-    });
-    document.getElementById("hideLayer2Btn").addEventListener("click", () => {
-      if (tileset2) tileset2.show = false;
+
+      document.getElementById("loadingOverlay").classList.add("hidden");
+    }
+
+    // --- LOGIKA UI (TOMBOL KONTROL) ---
+    const sidePanel = document.getElementById("sidePanel");
+    
+    document.getElementById("togglePanelBtn").addEventListener("click", () => {
+      sidePanel.classList.toggle("hidden");
+      if(window.innerWidth <= 768) sidePanel.classList.toggle("open");
     });
 
-    // Kontrol Semua Layer
-    document.getElementById("showAllBtn").addEventListener("click", async () => {
+    // Kontrol Zoom
+    document.getElementById("zoomPCBtn").addEventListener("click", async () => {
+      if (tileset1) await viewer.zoomTo(tileset1);
+    });
+    document.getElementById("zoomGSBtn").addEventListener("click", async () => {
+      if (tileset2) await viewer.zoomTo(tileset2);
+    });
+
+    // Kontrol Layer 1
+    document.getElementById("showLayer1Btn").addEventListener("click", () => { if (tileset1) tileset1.show = true; });
+    document.getElementById("hideLayer1Btn").addEventListener("click", () => { if (tileset1) tileset1.show = false; });
+
+    // Kontrol Layer 2
+    document.getElementById("showLayer2Btn").addEventListener("click", () => { if (tileset2) tileset2.show = true; });
+    document.getElementById("hideLayer2Btn").addEventListener("click", () => { if (tileset2) tileset2.show = false; });
+
+    // Kontrol Semua
+    document.getElementById("showAllBtn").addEventListener("click", () => {
       if (tileset1) tileset1.show = true;
       if (tileset2) tileset2.show = true;
-      if (tileset1) await viewer.zoomTo(tileset1);
     });
     document.getElementById("hideAllBtn").addEventListener("click", () => {
       if (tileset1) tileset1.show = false;
       if (tileset2) tileset2.show = false;
     });
 
-    // Mobile Panel Click-Away
-    mobileBackdrop.addEventListener("click", () => {
-      sidePanel.classList.remove("open");
-      mobileBackdrop.classList.remove("active");
-    });
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 768) {
-        mobileBackdrop.classList.remove("active");
-        sidePanel.classList.remove("open");
-      }
-    });
-
+    // Jalankan inisialisasi
     initScene();
   </script>
 </body>
