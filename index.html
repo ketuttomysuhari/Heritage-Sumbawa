@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Heritage Sumbawa - Bala Datu Ranga</title>
+  <title>Heritage Sumbawa - Bala Datu Ranga (Multi-Layer)</title>
 
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
   <link
@@ -383,7 +383,7 @@
         <div class="brand-dot"></div>
         <div>
           <div class="brand-title">Heritage Sumbawa</div>
-          <div class="brand-subtitle">Bala Datu Ranga • 3D Tiles • Semantik</div>
+          <div class="brand-subtitle">Bala Datu Ranga • Multi 3D Tiles • Semantik</div>
         </div>
       </div>
 
@@ -399,8 +399,8 @@
       <div class="section">
         <h2>Deskripsi</h2>
         <p>
-          Visualisasi ini difokuskan pada model point cloud 3D Tiles Bala Datu Ranga dari Cesium Ion Asset
-          <b>4597324</b>.
+          Visualisasi ini menampilkan dua model point cloud 3D Tiles untuk Bala Datu Ranga, masing-masing memiliki 
+          <b>Asset ID 4597324</b> dan <b>Asset ID 4599585</b> dari Cesium Ion.
         </p>
       </div>
 
@@ -410,7 +410,7 @@
           <strong>Nama</strong><span>Bala Datu Ranga</span>
           <strong>Kategori</strong><span>Heritage / situs budaya / arsitektur tradisional</span>
           <strong>Wilayah</strong><span>Sumbawa, Nusa Tenggara Barat, Indonesia</span>
-          <strong>Model utama</strong><span>Cesium 3D Tiles Ion Asset 4597324</span>
+          <strong>Aset Cesium</strong><span>4597324 & 4599585</span>
         </div>
       </div>
 
@@ -428,18 +428,26 @@
       </div>
 
       <div class="section">
-        <h2>Kontrol</h2>
+        <h2>Kontrol Layer</h2>
         <div class="toolbar">
-          <button class="btn primary" id="zoomSiteBtn" style="grid-column: span 2;">Zoom ke Situs</button>
-          <button class="btn success" id="showTilesBtn">Tampilkan 3D Tiles</button>
-          <button class="btn danger" id="hideTilesBtn">Sembunyikan 3D Tiles</button>
+          <button class="btn primary" id="zoomSiteBtn" style="grid-column: span 2;">Zoom ke Situs Utama</button>
+          
+          <button class="btn success" id="showLayer1Btn">Tampilkan Layer 1</button>
+          <button class="btn danger" id="hideLayer1Btn">Sembunyikan Layer 1</button>
+          
+          <button class="btn success" id="showLayer2Btn">Tampilkan Layer 2</button>
+          <button class="btn danger" id="hideLayer2Btn">Sembunyikan Layer 2</button>
+          
+          <button class="btn success" id="showAllBtn" style="background: rgba(56,189,248,.15); color: #bae6fd; border-color: rgba(56,189,248,.25);">Tampilkan Semua</button>
+          <button class="btn danger" id="hideAllBtn" style="background: rgba(239,68,68,.15); color: #fee2e2; border-color: rgba(239,68,68,.25);">Sembunyikan Semua</button>
         </div>
       </div>
     </aside>
 
     <div class="legend">
       <h3>Legenda</h3>
-      <div class="legend-item"><span class="swatch" style="background:#10b981"></span> 3D Tiles heritage</div>
+      <div class="legend-item"><span class="swatch" style="background:#10b981"></span> 3D Tiles Layer 1 (4597324)</div>
+      <div class="legend-item"><span class="swatch" style="background:#38bdf8"></span> 3D Tiles Layer 2 (4599585)</div>
     </div>
 
     <div class="loading" id="loadingOverlay">
@@ -447,7 +455,7 @@
         <div class="spinner"></div>
         <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Heritage Sumbawa</div>
         <div style="font-size:13px;color:#cbd5e1;line-height:1.5;">
-          Menyiapkan Cesium dan 3D Tiles Point Cloud Bala Datu Ranga.
+          Menyiapkan Cesium dan beberapa layer 3D Tiles Bala Datu Ranga...
         </div>
       </div>
     </div>
@@ -480,31 +488,43 @@
     const mobileBackdrop = document.getElementById("mobileBackdrop");
     const loadingOverlay = document.getElementById("loadingOverlay");
 
-    let tileset = null;
+    let tileset1 = null;
+    let tileset2 = null;
 
-    async function loadTileset() {
+    async function loadTilesets() {
+      // Memuat Layer 1 (4597324)
       try {
-        tileset = viewer.scene.primitives.add(
+        tileset1 = viewer.scene.primitives.add(
           await Cesium.Cesium3DTileset.fromIonAssetId(4597324)
         );
-        
-        // Mengatur ukuran point (point size) menjadi 2.0
-        tileset.style = new Cesium.Cesium3DTileStyle({
+        tileset1.style = new Cesium.Cesium3DTileStyle({
           pointSize: 2.0
         });
-
-        return true;
       } catch (error) {
-        console.error("Tileset error:", error);
-        return false;
+        console.error("Error memuat tileset 1:", error);
+      }
+
+      // Memuat Layer 2 (4599585)
+      try {
+        tileset2 = viewer.scene.primitives.add(
+          await Cesium.Cesium3DTileset.fromIonAssetId(4599585)
+        );
+        tileset2.style = new Cesium.Cesium3DTileStyle({
+          pointSize: 2.0
+        });
+      } catch (error) {
+        console.error("Error memuat tileset 2:", error);
       }
     }
 
     async function initScene() {
-      await loadTileset();
+      await loadTilesets();
       
-      if (tileset) {
-        await viewer.zoomTo(tileset);
+      // Mengarahkan kamera secara otomatis ke Layer 1 (sebagai acuan utama)
+      if (tileset1) {
+        await viewer.zoomTo(tileset1);
+      } else if (tileset2) {
+        await viewer.zoomTo(tileset2);
       }
 
       loadingOverlay.classList.add("hidden");
@@ -528,26 +548,42 @@
 
     document.getElementById("togglePanelBtn").addEventListener("click", togglePanel);
 
+    // Zoom Kontrol
     document.getElementById("homeBtn").addEventListener("click", async () => {
-      if (tileset) {
-        await viewer.zoomTo(tileset);
-      }
+      if (tileset1) await viewer.zoomTo(tileset1);
     });
 
     document.getElementById("zoomSiteBtn").addEventListener("click", async () => {
-      if (tileset) {
-        await viewer.zoomTo(tileset);
-      }
+      if (tileset1) await viewer.zoomTo(tileset1);
     });
 
-    document.getElementById("showTilesBtn").addEventListener("click", () => {
-      if (tileset) tileset.show = true;
+    // Kontrol Layer 1
+    document.getElementById("showLayer1Btn").addEventListener("click", () => {
+      if (tileset1) tileset1.show = true;
+    });
+    document.getElementById("hideLayer1Btn").addEventListener("click", () => {
+      if (tileset1) tileset1.show = false;
     });
 
-    document.getElementById("hideTilesBtn").addEventListener("click", () => {
-      if (tileset) tileset.show = false;
+    // Kontrol Layer 2
+    document.getElementById("showLayer2Btn").addEventListener("click", () => {
+      if (tileset2) tileset2.show = true;
+    });
+    document.getElementById("hideLayer2Btn").addEventListener("click", () => {
+      if (tileset2) tileset2.show = false;
     });
 
+    // Kontrol Tampilkan / Sembunyikan Semua
+    document.getElementById("showAllBtn").addEventListener("click", () => {
+      if (tileset1) tileset1.show = true;
+      if (tileset2) tileset2.show = true;
+    });
+    document.getElementById("hideAllBtn").addEventListener("click", () => {
+      if (tileset1) tileset1.show = false;
+      if (tileset2) tileset2.show = false;
+    });
+
+    // Responsif Sidepanel
     mobileBackdrop.addEventListener("click", () => {
       sidePanel.classList.remove("open");
       mobileBackdrop.classList.remove("active");
