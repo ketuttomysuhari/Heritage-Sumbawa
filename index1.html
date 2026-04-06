@@ -1,291 +1,58 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Heritage Sumbawa - Bala Datu Ranga (Multi-Layer)</title>
-
+  <meta charset="utf-8">
+  <title>Minimal Gaussian Splat Test</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
-  <link href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
-
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <style>
-    :root{
-      --bg:#08111f;
-      --panel:rgba(8,17,31,.88);
-      --panel2:rgba(255,255,255,.05);
-      --border:rgba(255,255,255,.1);
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --shadow:0 12px 34px rgba(0,0,0,.35);
-    }
-
-    * { box-sizing: border-box; }
-
+    /* Mengatur layar penuh tanpa margin */
     html, body, #cesiumContainer {
-      width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background: var(--bg); color: var(--text);
-    }
-
-    #cesiumContainer { position: absolute; inset: 0; }
-
-    .shell { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
-
-    .topbar {
-      position: absolute; top: 12px; left: 12px; right: 12px;
-      display: flex; justify-content: space-between; gap: 10px; pointer-events: none;
-    }
-
-    .brand, .panel, .legend, .icon-btn {
-      pointer-events: auto; background: var(--panel); border: 1px solid var(--border);
-      backdrop-filter: blur(12px); box-shadow: var(--shadow);
-    }
-
-    .brand {
-      border-radius: 999px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;
-    }
-
-    .brand-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: linear-gradient(135deg, #f59e0b, #fde68a); flex: 0 0 auto;
-    }
-
-    .brand-title { font-size: 15px; font-weight: 800; color: #fde68a; line-height: 1.1; }
-    .brand-subtitle { font-size: 12px; color: var(--muted); }
-
-    .actions { display: flex; gap: 8px; pointer-events: auto; }
-    .icon-btn {
-      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
-      color: #fff; cursor: pointer; font-size: 18px; transition: .2s ease;
-    }
-    .icon-btn:hover, .btn:hover { transform: translateY(-1px); }
-
-    .panel {
-      position: absolute; top: 68px; left: 12px; width: 390px;
-      max-width: calc(100vw - 24px); max-height: calc(100vh - 84px); overflow: auto;
-      border-radius: 22px; padding: 14px; transition: .28s ease;
-    }
-
-    .panel.hidden { transform: translateX(-110%); opacity: 0; }
-
-    .section {
-      background: var(--panel2); border: 1px solid rgba(255,255,255,.06);
-      border-radius: 16px; padding: 14px; margin-bottom: 12px;
-    }
-
-    .section h2 { margin: 0 0 10px; font-size: 15px; color: #fde68a; }
-    .section p { margin: 0 0 8px; font-size: 13px; line-height: 1.65; }
-
-    .meta { display: grid; grid-template-columns: 112px 1fr; gap: 6px 10px; font-size: 13px; }
-    .meta strong { color: #fcd34d; }
-
-    .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-
-    .btn {
-      border: none; border-radius: 12px; padding: 11px 12px; font-size: 13px;
-      font-weight: 700; cursor: pointer;
-    }
-    .btn.primary { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #111827; }
-    .btn.success { background: rgba(16,185,129,.15); color: #d1fae5; border: 1px solid rgba(16,185,129,.25); }
-    .btn.danger { background: rgba(239,68,68,.15); color: #fee2e2; border: 1px solid rgba(239,68,68,.25); }
-
-    .legend {
-      position: absolute; right: 12px; bottom: 12px; border-radius: 18px; padding: 14px;
-    }
-    .legend h3 { margin: 0 0 10px; font-size: 14px; color: #fde68a; }
-    .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
-    .swatch { width: 14px; height: 14px; border-radius: 4px; flex: 0 0 auto; }
-
-    .loading {
-      position: absolute; inset: 0; z-index: 30; display: flex;
-      align-items: center; justify-content: center; background: radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
-    }
-    .loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loading-box { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; text-align: center; }
-    .spinner {
-      width: 34px; height: 34px; border: 3px solid rgba(255,255,255,.18);
-      border-top-color: #fbbf24; border-radius: 50%; margin: 0 auto 12px; animation: spin .9s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 768px) {
-      .panel {
-        top: auto; left: 0; right: 0; bottom: 0; width: 100%;
-        max-height: 76vh; border-radius: 22px 22px 0 0;
-        transform: translateY(calc(100% - 92px)); opacity: 1;
-      }
-      .panel.open { transform: translateY(0); }
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
   <div id="cesiumContainer"></div>
 
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-dot"></div>
-        <div>
-          <div class="brand-title">Heritage Sumbawa</div>
-          <div class="brand-subtitle">Bala Datu Ranga • PC & Splat</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="icon-btn" id="togglePanelBtn" title="Panel">☰</button>
-      </div>
-    </div>
-
-    <aside class="panel hidden" id="sidePanel">
-      <div class="section">
-        <h2>Informasi Semantik</h2>
-        <div class="meta">
-          <strong>Nama</strong><span>Bala Datu Ranga</span>
-          <strong>Kategori</strong><span>Situs Budaya</span>
-          <strong>Aset 1 (PC)</strong><span>4597324</span>
-          <strong>Aset 2 (GS)</strong><span>4599585</span>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Kontrol Layer</h2>
-        <div class="toolbar">
-          <button class="btn primary" id="zoomPCBtn" style="grid-column: span 1;">Zoom ke Aset 1</button>
-          <button class="btn primary" id="zoomGSBtn" style="grid-column: span 1;">Zoom ke Aset 2</button>
-          
-          <button class="btn success" id="showLayer1Btn">Tampilkan L1 (PC)</button>
-          <button class="btn danger" id="hideLayer1Btn">Sembunyikan L1</button>
-          
-          <button class="btn success" id="showLayer2Btn">Tampilkan L2 (GS)</button>
-          <button class="btn danger" id="hideLayer2Btn">Sembunyikan L2</button>
-          
-          <button class="btn success" id="showAllBtn" style="background: rgba(56,189,248,.15); color: #bae6fd; border-color: rgba(56,189,248,.25);">Tampilkan Semua</button>
-          <button class="btn danger" id="hideAllBtn" style="background: rgba(239,68,68,.15); color: #fee2e2; border-color: rgba(239,68,68,.25);">Sembunyikan Semua</button>
-        </div>
-      </div>
-    </aside>
-
-    <div class="legend">
-      <h3>Legenda</h3>
-      <div class="legend-item"><span class="swatch" style="background:#10b981"></span> Layer 1: Point Cloud (4597324)</div>
-      <div class="legend-item"><span class="swatch" style="background:#38bdf8"></span> Layer 2: Gaussian Splat (4599585)</div>
-    </div>
-
-    <div class="loading" id="loadingOverlay">
-      <div class="loading-box">
-        <div class="spinner"></div>
-        <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Aset</div>
-        <div style="font-size:13px;color:#cbd5e1;">Menyiapkan Cesium, Point Cloud, & Splat...</div>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Menggunakan Access Token dari kode Anda yang berhasil
+    // 1. Masukkan Access Token
     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjOWRmOThmYS1iYjhiLTQ4YzgtOTAzMC1hYjE5OGZmZDExMGUiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0MTMxMzB9.oiJJytiAc-uPwL9DTfzg-iulsz8DixZOtWrbtO1K9rI";
 
-    const viewer = new Cesium.Viewer("cesiumContainer", {
-      animation: false,
-      baseLayerPicker: true,
-      fullscreenButton: true,
-      vrButton: false,
-      geocoder: true,
-      homeButton: true,
-      infoBox: false,
-      sceneModePicker: true,
-      selectionIndicator: false,
-      timeline: false,
-      navigationHelpButton: false,
-      shouldAnimate: true,
-      terrain: Cesium.Terrain.fromWorldTerrain()
-    });
+    // 2. Inisialisasi Viewer POLOS persis seperti di Sandcastle (tanpa opsi tambahan)
+    const viewer = new Cesium.Viewer("cesiumContainer");
 
-    viewer.scene.globe.depthTestAgainstTerrain = false;
-
-    let tileset1 = null; // Point Cloud
-    let tileset2 = null; // Gaussian Splat
-
-    async function loadTilesets() {
-      // 1. Memuat Layer 1 (Point Cloud Biasa)
+    // 3. Bungkus kode Sandcastle Anda ke dalam Async Function agar jalan di HTML standar
+    async function loadGaussianSplat() {
       try {
-        tileset1 = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
-        viewer.scene.primitives.add(tileset1);
+        const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
+        viewer.scene.primitives.add(tileset);
         
-        // Memberikan ukuran titik 2.0 untuk point cloud standar
-        tileset1.style = new Cesium.Cesium3DTileStyle({
-          pointSize: 2.0
-        });
-      } catch (error) {
-        console.error("Gagal memuat Layer 1 (PC):", error);
-      }
+        await viewer.zoomTo(tileset);
 
-      // 2. Memuat Layer 2 (Gaussian Splat) menggunakan logika dari kode Anda yang berhasil
-      try {
-        tileset2 = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
-        viewer.scene.primitives.add(tileset2);
-
-        // Menerapkan defaultStyle dari server Ion (kunci untuk Gaussian Splat)
-        const extras = tileset2.asset.extras;
+        // Apply the default style if it exists (Sangat krusial untuk Splatting)
+        const extras = tileset.asset.extras;
         if (
           Cesium.defined(extras) &&
           Cesium.defined(extras.ion) &&
           Cesium.defined(extras.ion.defaultStyle)
         ) {
-          tileset2.style = new Cesium.Cesium3DTileStyle(extras.ion.defaultStyle);
+          tileset.style = new Cesium.Cesium3DTileStyle(extras.ion.defaultStyle);
+          console.log("Style bawaan berhasil diterapkan.");
         }
+
+        console.log("Gaussian Splat berhasil dimuat!");
       } catch (error) {
-        console.error("Gagal memuat Layer 2 (Splat):", error);
+        console.error("Gagal memuat:", error);
       }
     }
 
-    async function initScene() {
-      await loadTilesets();
-      
-      // Setelah termuat, fokuskan kamera ke salah satu tileset (Prioritas Layer 2 / GS)
-      if (tileset2) {
-        await viewer.zoomTo(tileset2);
-      } else if (tileset1) {
-        await viewer.zoomTo(tileset1);
-      }
-
-      document.getElementById("loadingOverlay").classList.add("hidden");
-    }
-
-    // --- LOGIKA UI (TOMBOL KONTROL) ---
-    const sidePanel = document.getElementById("sidePanel");
-    
-    document.getElementById("togglePanelBtn").addEventListener("click", () => {
-      sidePanel.classList.toggle("hidden");
-      if(window.innerWidth <= 768) sidePanel.classList.toggle("open");
-    });
-
-    // Kontrol Zoom
-    document.getElementById("zoomPCBtn").addEventListener("click", async () => {
-      if (tileset1) await viewer.zoomTo(tileset1);
-    });
-    document.getElementById("zoomGSBtn").addEventListener("click", async () => {
-      if (tileset2) await viewer.zoomTo(tileset2);
-    });
-
-    // Kontrol Layer 1
-    document.getElementById("showLayer1Btn").addEventListener("click", () => { if (tileset1) tileset1.show = true; });
-    document.getElementById("hideLayer1Btn").addEventListener("click", () => { if (tileset1) tileset1.show = false; });
-
-    // Kontrol Layer 2
-    document.getElementById("showLayer2Btn").addEventListener("click", () => { if (tileset2) tileset2.show = true; });
-    document.getElementById("hideLayer2Btn").addEventListener("click", () => { if (tileset2) tileset2.show = false; });
-
-    // Kontrol Semua
-    document.getElementById("showAllBtn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = true;
-      if (tileset2) tileset2.show = true;
-    });
-    document.getElementById("hideAllBtn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = false;
-      if (tileset2) tileset2.show = false;
-    });
-
-    // Jalankan inisialisasi
-    initScene();
+    // Jalankan fungsinya
+    loadGaussianSplat();
   </script>
 </body>
 </html>
