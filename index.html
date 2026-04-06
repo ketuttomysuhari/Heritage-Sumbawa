@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Heritage Sumbawa - Bala Datu Ranga 3D</title>
+  <title>Heritage Sumbawa - Videogrammetry Edition</title>
 
   <script src="https://unpkg.com/cesium@latest/Build/Cesium/Cesium.js"></script>
   <link href="https://unpkg.com/cesium@latest/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
@@ -18,98 +18,49 @@
       --text-muted: #94a3b8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-    
-    html, body, #cesiumContainer { 
-      width: 100%; height: 100%; overflow: hidden; background: #000; 
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+    html, body, #cesiumContainer { width: 100%; height: 100%; overflow: hidden; background: #000; }
 
-    /* --- LAYOUT CONTROLLERS --- */
-    .ui-wrapper {
-      position: absolute; inset: 0; pointer-events: none;
-      display: flex; flex-direction: column; z-index: 10;
-    }
+    .ui-wrapper { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; z-index: 10; }
 
-    /* Top Bar */
-    .top-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px; pointer-events: auto;
-    }
-    .brand {
-      background: var(--glass); border: 1px solid var(--border);
-      padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(12px);
-    }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px; pointer-events: auto; }
+    .brand { background: var(--glass); border: 1px solid var(--border); padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(12px); }
     .brand h1 { font-size: 15px; color: var(--accent); font-weight: 800; }
-    .brand p { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .brand p { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 
-    /* Main Content Area (Sidebar & Layers) */
-    .middle-content {
-      flex: 1; display: flex; justify-content: space-between; 
-      padding: 0 16px; align-items: flex-start;
-    }
+    .middle-content { flex: 1; display: flex; justify-content: space-between; padding: 0 16px; align-items: flex-start; }
 
-    /* SIDEBAR DESKTOP */
     .info-card {
       width: 320px; background: var(--glass); border: 1px solid var(--border);
       border-radius: 16px; padding: 20px; pointer-events: auto;
-      backdrop-filter: blur(15px); max-height: 70vh; overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      backdrop-filter: blur(15px); max-height: 65vh; overflow-y: auto;
     }
 
-    /* FLOATING LAYERS (Kanan Layar) */
-    .layer-controls {
-      display: flex; flex-direction: column; gap: 10px; pointer-events: auto;
-    }
-    .btn-layer {
+    .layer-controls { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
+    .btn-tool {
       background: var(--glass); border: 1px solid var(--border); color: white;
-      padding: 12px 16px; border-radius: 12px; cursor: pointer;
-      backdrop-filter: blur(10px); font-size: 12px; font-weight: 600;
-      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; align-items: center; gap: 10px; width: 170px;
+      padding: 12px; border-radius: 10px; cursor: pointer;
+      backdrop-filter: blur(10px); font-size: 11px; font-weight: 600;
+      transition: 0.2s; display: flex; align-items: center; gap: 8px; width: 180px;
     }
-    .btn-layer.active { border-right: 4px solid var(--accent); background: rgba(251,191,36,0.1); }
-    .btn-layer:hover { transform: translateX(-5px); background: rgba(255,255,255,0.1); }
+    .btn-tool.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .btn-tool:hover { background: rgba(255,255,255,0.1); }
 
-    /* BOTTOM BAR (Legend) */
-    .bottom-status {
-      padding: 16px; display: flex; justify-content: center; pointer-events: auto;
-    }
-    .legend-pill {
+    .bottom-status { padding: 16px; display: flex; justify-content: center; pointer-events: auto; }
+    .status-display {
       background: var(--glass); border: 1px solid var(--border);
-      padding: 8px 20px; border-radius: 50px; display: flex; gap: 20px;
-      font-size: 11px; color: var(--text-muted); backdrop-filter: blur(10px);
+      padding: 8px 20px; border-radius: 50px; font-size: 11px; color: var(--accent); backdrop-filter: blur(10px);
     }
 
-    /* TYPOGRAPHY */
-    .section-title { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; }
-    .content-text { font-size: 13px; color: var(--text-main); line-height: 1.6; margin-bottom: 15px; }
+    .section-title { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; }
+    .content-text { font-size: 13px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px; }
 
-    /* --- RESPONSIVE FIXES --- */
     @media (max-width: 768px) {
-      .middle-content { flex-direction: column-reverse; justify-content: flex-end; gap: 20px; }
-      
-      .info-card {
-        width: 100%; border-radius: 20px 20px 0 0; position: fixed; 
-        bottom: 0; left: 0; height: 35vh; z-index: 100;
-      }
-
-      .layer-controls {
-        position: fixed; top: 85px; right: 16px; width: auto;
-      }
-      .btn-layer { width: 140px; padding: 10px; font-size: 11px; }
-
-      .bottom-status { display: none; } /* Sembunyikan legenda di HP agar bersih */
-      
-      .brand { padding: 8px 15px; }
-      .brand h1 { font-size: 13px; }
-
-      /* Adjust Cesium Buttons */
-      .cesium-viewer-toolbar { top: 10px !important; right: 60px !important; }
+      .info-card { width: 100%; position: fixed; bottom: 0; left: 0; height: 35vh; border-radius: 20px 20px 0 0; }
+      .layer-controls { position: fixed; top: 80px; right: 16px; }
+      .btn-tool { width: 150px; padding: 10px; }
+      .bottom-status { display: none; }
     }
-
-    /* Custom Scrollbar */
-    .info-card::-webkit-scrollbar { width: 4px; }
-    .info-card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
   </style>
 </head>
 <body>
@@ -120,95 +71,134 @@
   <header class="top-nav">
     <div class="brand">
       <h1>BALA DATU RANGA</h1>
-      <p>Heritage Geo-Information System</p>
+      <p>Videogrammetry 3D Survey</p>
     </div>
   </header>
 
   <div class="middle-content">
     <aside class="info-card">
-      <div class="section-title">Deskripsi Objek</div>
-      <p class="content-text">Bala Datu Ranga adalah situs cagar budaya kediaman Perdana Menteri Kesultanan Sumbawa. Struktur bangunan ini merupakan prototipe arsitektur vernakular Sumbawa yang sangat penting untuk dilestarikan secara digital.</p>
+      <div class="section-title">Informasi Situs</div>
+      <p class="content-text">Situs Bala Datu Ranga direkonstruksi secara digital menggunakan data visual dari udara untuk pemetaan cagar budaya presisi.</p>
       
-      <div class="section-title">Informasi Semantik</div>
-      <p class="content-text">
-        • <b>Fungsi:</b> Rumah Dinas & Kediaman Adat.<br>
-        • <b>Material:</b> Kayu Jati & Atap Sirap.<br>
-        • <b>Elemen:</b> 12 Tiang Utama (Saka).<br>
-        • <b>Status:</b> Cagar Budaya Nasional.
+      <div class="section-title">Metodologi</div>
+      <p class="content-text" style="font-size: 12px; color: var(--text-muted);">
+        <b>Technique:</b> Videogrammetry<br>
+        <b>Platform:</b> UAV / Drone<br>
+        <b>Output:</b> Point Cloud & Gaussian Splat
       </p>
 
-      <div class="section-title">Metodologi Survey</div>
-      <p class="content-text" style="font-style: italic; font-size: 12px; color: var(--text-muted);">
-        Data diakuisisi menggunakan Terrestrial Laser Scanner (TLS) untuk geometri presisi dan Photogrammetry Drone untuk rekonstruksi tekstur Gaussian Splatting.
+      <div class="section-title">Panduan Alat</div>
+      <p class="content-text" style="font-size: 11px; color: var(--accent);">
+        • <b>Cek Koordinat:</b> Aktifkan lalu klik pada objek.<br>
+        • <b>Ukur Jarak:</b> Klik dua titik pada model untuk melihat hasil jarak.
       </p>
     </aside>
 
     <nav class="layer-controls">
-      <button class="btn-layer active" id="btnPC" onclick="toggleLayer('pc')">
-        <span style="color:#10b981">■</span> Point Cloud
-      </button>
-      <button class="btn-layer active" id="btnGS" onclick="toggleLayer('gs')">
-        <span style="color:#38bdf8">■</span> Gaussian Splat
-      </button>
-      <button class="btn-layer" onclick="zoomHome()" style="background: var(--accent); color: #000; justify-content: center;">
-        Focus Site ⌖
-      </button>
+      <div class="section-title" style="color:white; opacity:0.5; margin-left:5px;">Layers</div>
+      <button class="btn-tool active" id="btnPC" onclick="toggleLayer('pc')">● Point Cloud</button>
+      <button class="btn-tool active" id="btnGS" onclick="toggleLayer('gs')">● Gaussian Splat</button>
+      
+      <div class="section-title" style="color:white; opacity:0.5; margin-left:5px; margin-top:10px;">Tools</div>
+      <button class="btn-tool" id="btnCoord" onclick="setActiveTool('coord')">📍 Cek Koordinat</button>
+      <button class="btn-tool" id="btnDist" onclick="setActiveTool('dist')">📏 Ukur Jarak</button>
+      <button class="btn-tool" onclick="resetTools()" style="color: #ef4444;">✕ Reset Tools</button>
     </nav>
   </div>
 
   <footer class="bottom-status">
-    <div class="legend-pill">
-      <div style="display:flex; align-items:center; gap:5px;"><span style="color:#10b981">●</span> TLS Point Cloud</div>
-      <div style="display:flex; align-items:center; gap:5px;"><span style="color:#38bdf8">●</span> 3D Gaussian Splat</div>
-      <div style="border-left: 1px solid var(--border); padding-left: 15px;">CRS: EPSG:4326</div>
-    </div>
+    <div class="status-display" id="outputInfo">Status: Ready | Klik Tools untuk memulai</div>
   </footer>
 </div>
 
 <script>
-  // Access Token
   Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik";
 
   const viewer = new Cesium.Viewer("cesiumContainer", {
     terrain: Cesium.Terrain.fromWorldTerrain(),
-    animation: false,
-    timeline: false,
-    infoBox: false,
-    selectionIndicator: false,
-    navigationHelpButton: false
+    animation: false, timeline: false, infoBox: false, selectionIndicator: false
   });
 
   let pcLayer, gsLayer;
+  let activeTool = null;
+  let measurements = [];
 
   async function loadData() {
-    try {
-      // Load Point Cloud
-      pcLayer = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
-      viewer.scene.primitives.add(pcLayer);
-
-      // Load Gaussian Splat
-      gsLayer = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
-      viewer.scene.primitives.add(gsLayer);
-
-      viewer.zoomTo(pcLayer);
-    } catch (e) {
-      console.error("Gagal memuat model:", e);
-    }
+    pcLayer = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
+    viewer.scene.primitives.add(pcLayer);
+    gsLayer = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
+    viewer.scene.primitives.add(gsLayer);
+    viewer.zoomTo(pcLayer);
   }
 
   function toggleLayer(type) {
-    if(type === 'pc') {
-      pcLayer.show = !pcLayer.show;
-      document.getElementById('btnPC').classList.toggle('active');
-    } else {
-      gsLayer.show = !gsLayer.show;
-      document.getElementById('btnGS').classList.toggle('active');
-    }
+    if(type === 'pc') { pcLayer.show = !pcLayer.show; document.getElementById('btnPC').classList.toggle('active'); }
+    else { gsLayer.show = !gsLayer.show; document.getElementById('btnGS').classList.toggle('active'); }
   }
 
-  function zoomHome() {
-    viewer.zoomTo(pcLayer);
+  function setActiveTool(tool) {
+    activeTool = tool;
+    measurements = [];
+    document.getElementById('btnCoord').classList.remove('active');
+    document.getElementById('btnDist').classList.remove('active');
+    
+    if(tool === 'coord') document.getElementById('btnCoord').classList.add('active');
+    if(tool === 'dist') document.getElementById('btnDist').classList.add('active');
+    
+    document.getElementById('outputInfo').innerText = `Mode: ${tool === 'coord' ? 'Ambil Koordinat' : 'Ukur Jarak (Klik 2 titik)'}`;
   }
+
+  function resetTools() {
+    activeTool = null;
+    measurements = [];
+    viewer.entities.removeAll();
+    document.getElementById('btnCoord').classList.remove('active');
+    document.getElementById('btnDist').classList.remove('active');
+    document.getElementById('outputInfo').innerText = "Status: Ready";
+  }
+
+  // Handle Clicks
+  const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  handler.setInputAction(function(click) {
+    const cartesian = viewer.scene.pickPosition(click.position);
+    if (!Cesium.defined(cartesian)) return;
+
+    if (activeTool === 'coord') {
+      const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+      const lon = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
+      const lat = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+      const height = cartographic.height.toFixed(2);
+      
+      document.getElementById('outputInfo').innerText = `Lat: ${lat}, Lon: ${lon}, H: ${height}m`;
+      
+      viewer.entities.add({
+        position: cartesian,
+        point: { pixelSize: 10, color: Cesium.Color.YELLOW }
+      });
+    } 
+    
+    else if (activeTool === 'dist') {
+      measurements.push(cartesian);
+      viewer.entities.add({
+        position: cartesian,
+        point: { pixelSize: 8, color: Cesium.Color.CYAN }
+      });
+
+      if (measurements.length === 2) {
+        const distance = Cesium.Cartesian3.distance(measurements[0], measurements[1]);
+        document.getElementById('outputInfo').innerText = `Jarak: ${distance.toFixed(3)} meter`;
+        
+        viewer.entities.add({
+          polyline: {
+            positions: measurements,
+            width: 3,
+            material: Cesium.Color.CYAN
+          }
+        });
+        measurements = []; // Reset for next measurement
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
   loadData();
 </script>
