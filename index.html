@@ -3,597 +3,275 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Heritage Sumbawa - Bala Datu Ranga (Multi-Layer)</title>
+  <title>Heritage Sumbawa - Bala Datu Ranga (Responsive)</title>
 
-<script src="https://unpkg.com/cesium@latest/Build/Cesium/Cesium.js"></script>
-<link href="https://unpkg.com/cesium@latest/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+  <script src="https://unpkg.com/cesium@latest/Build/Cesium/Cesium.js"></script>
+  <link href="https://unpkg.com/cesium@latest/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
 
   <style>
-    :root{
-      --bg:#08111f;
-      --panel:rgba(8,17,31,.88);
-      --panel2:rgba(255,255,255,.05);
-      --border:rgba(255,255,255,.1);
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --accent:#f59e0b;
-      --accent2:#38bdf8;
-      --ok:#10b981;
-      --err:#ef4444;
-      --warn:#f59e0b;
-      --shadow:0 12px 34px rgba(0,0,0,.35);
+    :root {
+      --bg: #08111f;
+      --panel: rgba(8, 17, 31, 0.92);
+      --panel2: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.15);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #f59e0b;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     html, body, #cesiumContainer {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      width: 100%; height: 100%; margin: 0; padding: 0;
+      overflow: hidden; font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
     }
 
-    #cesiumContainer {
-      position: absolute;
-      inset: 0;
-    }
-
-    .shell {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 20;
-    }
-
+    /* Top Navigation */
     .topbar {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      right: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      pointer-events: none;
-    }
-
-    .brand, .panel, .legend, .icon-btn {
-      pointer-events: auto;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
+      position: absolute; top: 12px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      z-index: 100; pointer-events: none;
     }
 
     .brand {
-      border-radius: 999px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: calc(100% - 120px);
+      pointer-events: auto; background: var(--panel);
+      backdrop-filter: blur(16px); border: 1px solid var(--border);
+      padding: 10px 16px; border-radius: 50px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: var(--shadow); max-width: 70%;
     }
 
     .brand-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f59e0b, #fde68a);
-      flex: 0 0 auto;
+      width: 10px; height: 10px; background: var(--accent);
+      border-radius: 50%; box-shadow: 0 0 10px var(--accent);
     }
 
-    .brand-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #fde68a;
-      line-height: 1.1;
-    }
+    .brand-title { font-weight: 800; font-size: 14px; color: #fde68a; }
+    .brand-subtitle { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .brand-subtitle {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      pointer-events: auto;
-    }
+    .actions { pointer-events: auto; display: flex; gap: 8px; }
 
     .icon-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      cursor: pointer;
-      font-size: 18px;
-      transition: .2s ease;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--panel); border: 1px solid var(--border);
+      color: white; backdrop-filter: blur(16px);
+      cursor: pointer; display: grid; place-items: center; box-shadow: var(--shadow);
     }
 
-    .icon-btn:hover, .btn:hover {
-      transform: translateY(-1px);
-    }
-
+    /* Side Panel & Bottom Sheet Logic */
     .panel {
-      position: absolute;
-      top: 68px;
-      left: 12px;
-      width: 390px;
-      max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 84px);
-      overflow: auto;
-      border-radius: 22px;
-      padding: 14px;
-      transition: .28s ease;
+      position: absolute; z-index: 110;
+      background: var(--panel); border: 1px solid var(--border);
+      backdrop-filter: blur(20px); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column;
     }
 
-    .panel.hidden {
-      transform: translateX(-110%);
-      opacity: 0;
-    }
-
-    .section {
-      background: var(--panel2);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-
-    .section h2 {
-      margin: 0 0 10px;
-      font-size: 15px;
-      color: #fde68a;
-    }
-
-    .section p, .section li {
-      margin: 0 0 8px;
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .section ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: 112px 1fr;
-      gap: 6px 10px;
-      font-size: 13px;
-    }
-
-    .meta strong {
-      color: #fcd34d;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
-      color: #111827;
-    }
-
-    .btn.secondary {
-      background: rgba(255,255,255,.08);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .btn.success {
-      background: rgba(16,185,129,.15);
-      color: #d1fae5;
-      border: 1px solid rgba(16,185,129,.25);
-    }
-
-    .btn.danger {
-      background: rgba(239,68,68,.15);
-      color: #fee2e2;
-      border: 1px solid rgba(239,68,68,.25);
-    }
-
-    .legend {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      width: 280px;
-      max-width: calc(100vw - 24px);
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    .legend h3 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: #fde68a;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    .swatch {
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      flex: 0 0 auto;
-    }
-
-    .info-note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.55;
-      margin-top: 8px;
-    }
-
-    .loading {
-      position: absolute;
-      inset: 0;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, rgba(8,17,31,.2), rgba(8,17,31,.82));
-      transition: .3s ease;
-    }
-
-    .loading.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loading-box {
-      width: min(320px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3px solid rgba(255,255,255,.18);
-      border-top-color: #fbbf24;
-      border-radius: 50%;
-      margin: 0 auto 12px;
-      animation: spin .9s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .mobile-backdrop {
-      display: none;
-    }
-
-    .cesium-viewer-toolbar {
-      top: 68px !important;
-      right: 12px !important;
-    }
-
-    .cesium-infoBox {
-      max-width: 360px;
-    }
-
-    @media (max-width: 768px) {
-      .brand {
-        max-width: calc(100% - 108px);
-      }
-
+    /* Desktop View */
+    @media (min-width: 769px) {
       .panel {
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        max-width: 100%;
-        max-height: 76vh;
-        border-radius: 22px 22px 0 0;
-        transform: translateY(calc(100% - 92px));
-        opacity: 1;
+        top: 70px; left: 12px; width: 380px;
+        max-height: calc(100vh - 100px); border-radius: 20px;
+        padding: 20px; opacity: 1; transform: translateX(0);
       }
-
-      .panel.open {
-        transform: translateY(0);
+      .panel.hidden { transform: translateX(-420px); opacity: 0; }
+      .legend {
+        position: absolute; bottom: 30px; right: 12px;
+        background: var(--panel); padding: 15px; border-radius: 15px;
+        border: 1px solid var(--border); width: 260px;
       }
+    }
 
-      .panel.hidden {
-        transform: translateY(calc(100% - 92px));
-        opacity: 1;
+    /* Mobile View (Bottom Sheet Style) */
+    @media (max-width: 768px) {
+      .panel {
+        bottom: 0; left: 0; right: 0; width: 100%;
+        height: 70vh; border-radius: 24px 24px 0 0;
+        padding: 20px; transform: translateY(100%);
       }
-
-      .mobile-backdrop {
-        display: block;
-        position: absolute;
-        inset: 0;
-        z-index: 19;
-        background: rgba(0,0,0,.2);
-        opacity: 0;
-        pointer-events: none;
-        transition: .25s ease;
-      }
-
-      .mobile-backdrop.active {
-        opacity: 1;
-        pointer-events: auto;
+      .panel.open { transform: translateY(0); }
+      
+      /* Handle untuk ditarik (visual) */
+      .panel::before {
+        content: ''; width: 40px; height: 4px; background: var(--border);
+        border-radius: 2px; margin: -10px auto 15px; display: block;
       }
 
       .legend {
-        right: 12px;
-        left: 12px;
-        width: auto;
-        bottom: 12px;
+        position: relative; margin-top: 10px;
+        background: var(--panel2); padding: 12px; border-radius: 12px;
       }
 
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      .meta {
-        grid-template-columns: 1fr;
-      }
-
-      .cesium-viewer-toolbar {
-        top: 64px !important;
-        right: 10px !important;
-      }
+      /* Geser tombol bawaan Cesium agar tidak tertutup */
+      .cesium-viewer-toolbar { top: 70px !important; }
+      .cesium-viewer-fullscreenContainer { bottom: 80px !important; }
     }
+
+    /* Content Styling */
+    .scroll-area { overflow-y: auto; flex: 1; padding-right: 5px; }
+    .scroll-area::-webkit-scrollbar { width: 4px; }
+    .scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+    .section { background: var(--panel2); border-radius: 15px; padding: 15px; margin-bottom: 12px; }
+    h2 { font-size: 14px; color: var(--accent); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+    p, li, .meta { font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+    .grid-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .btn {
+      border: none; border-radius: 10px; padding: 12px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .btn-primary { background: var(--accent); color: #000; grid-column: span 2; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+    .btn-outline:active { background: var(--border); }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; z-index: 1000; transition: 0.5s;
+    }
+    .loading-overlay.fade { opacity: 0; visibility: hidden; }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid var(--panel2);
+      border-top: 3px solid var(--accent); border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 105; display: none; backdrop-filter: blur(4px);
+    }
+    .backdrop.active { display: block; }
   </style>
 </head>
 <body>
+
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 600;">Memuat Data Geospasial...</p>
+  </div>
+
   <div id="cesiumContainer"></div>
 
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-dot"></div>
-        <div>
-          <div class="brand-title">Heritage Sumbawa</div>
-          <div class="brand-subtitle">Bala Datu Ranga • Multi 3D Tiles • Semantik</div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="icon-btn" id="togglePanelBtn" title="Panel">☰</button>
-        <button class="icon-btn" id="homeBtn" title="Zoom">⌖</button>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-title">Heritage Sumbawa</div>
+        <div class="brand-subtitle">Bala Datu Ranga 3D</div>
       </div>
     </div>
+    <div class="actions">
+      <button class="icon-btn" id="homeBtn">⌖</button>
+      <button class="icon-btn" id="togglePanelBtn">☰</button>
+    </div>
+  </div>
 
-    <div class="mobile-backdrop" id="mobileBackdrop"></div>
+  <div class="backdrop" id="backdrop"></div>
 
-    <aside class="panel hidden" id="sidePanel">
+  <aside class="panel" id="sidePanel">
+    <div class="scroll-area">
       <div class="section">
-        <h2>Deskripsi</h2>
-        <p>
-          Visualisasi ini menampilkan dua model point cloud 3D Tiles untuk Bala Datu Ranga, masing-masing memiliki 
-          <b>Asset ID 4597324</b> dan <b>Asset ID 4599585</b> dari Cesium Ion.
-        </p>
-      </div>
-
-      <div class="section">
-        <h2>Informasi Semantik</h2>
+        <h2>Informasi Situs</h2>
         <div class="meta">
-          <strong>Nama</strong><span>Bala Datu Ranga</span>
-          <strong>Kategori</strong><span>Heritage / situs budaya / arsitektur tradisional</span>
-          <strong>Wilayah</strong><span>Sumbawa, Nusa Tenggara Barat, Indonesia</span>
-          <strong>Aset Cesium</strong><span>4597324 & 4599585</span>
+          <strong>Lokasi:</strong> Sumbawa, NTB<br>
+          <strong>Model:</strong> Point Cloud 3D Tiles<br>
+          <strong>Status:</strong> Digital Twin
         </div>
-      </div>
-
-      <div class="section">
-        <h2>Sejarah Singkat</h2>
-        <p>
-          Bala Datu Ranga ditampilkan sebagai bagian dari heritage digital Sumbawa yang dapat
-          dikembangkan lebih lanjut dengan data sejarah, arsitektur, fungsi bangunan, dan nilai
-          budaya lokal.
-        </p>
-        <ul>
-          <li>Representasi spasial situs heritage.</li>
-          <li>Dukungan untuk museum digital dan edukasi budaya.</li>
-        </ul>
       </div>
 
       <div class="section">
         <h2>Kontrol Layer</h2>
-        <div class="toolbar">
-          <button class="btn primary" id="zoomSiteBtn" style="grid-column: span 2;">Zoom ke Situs Utama</button>
-          
-          <button class="btn success" id="showLayer1Btn">Tampilkan Layer 1</button>
-          <button class="btn danger" id="hideLayer1Btn">Sembunyikan Layer 1</button>
-          
-          <button class="btn success" id="showLayer2Btn">Tampilkan Layer 2</button>
-          <button class="btn danger" id="hideLayer2Btn">Sembunyikan Layer 2</button>
-          
-          <button class="btn success" id="showAllBtn" style="background: rgba(56,189,248,.15); color: #bae6fd; border-color: rgba(56,189,248,.25);">Tampilkan Semua</button>
-          <button class="btn danger" id="hideAllBtn" style="background: rgba(239,68,68,.15); color: #fee2e2; border-color: rgba(239,68,68,.25);">Sembunyikan Semua</button>
+        <div class="grid-tools">
+          <button class="btn btn-primary" id="zoomSiteBtn">Fokus ke Bangunan</button>
+          <button class="btn btn-outline" id="toggleL1">Layer 1: On</button>
+          <button class="btn btn-outline" id="toggleL2">Layer 2: On</button>
         </div>
       </div>
-    </aside>
 
-    <div class="legend">
-      <h3>Legenda</h3>
-      <div class="legend-item"><span class="swatch" style="background:#10b981"></span> 3D Tiles Layer 1 (4597324)</div>
-      <div class="legend-item"><span class="swatch" style="background:#38bdf8"></span> 3D Tiles Layer 2 (4599585)</div>
-    </div>
+      <div class="section">
+        <h2>Deskripsi</h2>
+        <p>Dokumentasi digital presisi tinggi menggunakan teknik LiDAR/Photogrammetry untuk pelestarian cagar budaya Bala Datu Ranga.</p>
+      </div>
 
-    <div class="loading" id="loadingOverlay">
-      <div class="loading-box">
-        <div class="spinner"></div>
-        <div style="font-size:15px;font-weight:800;color:#fde68a;margin-bottom:6px;">Memuat Heritage Sumbawa</div>
-        <div style="font-size:13px;color:#cbd5e1;line-height:1.5;">
-          Menyiapkan Cesium dan beberapa layer 3D Tiles Bala Datu Ranga...
+      <div class="legend">
+        <h2 style="font-size: 11px;">Legenda Spasial</h2>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:5px;">
+          <span style="width:12px; height:12px; background:#10b981; border-radius:3px;"></span> Layer Aset 4597324
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px;">
+          <span style="width:12px; height:12px; background:#38bdf8; border-radius:3px;"></span> Layer Aset 4599585
         </div>
       </div>
     </div>
-  </div>
+  </aside>
 
   <script>
     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik";
 
     const viewer = new Cesium.Viewer("cesiumContainer", {
-      animation: false,
-      baseLayerPicker: true,
-      fullscreenButton: true,
-      vrButton: false,
-      geocoder: true,
-      homeButton: true,
-      infoBox: false,
-      sceneModePicker: true,
-      selectionIndicator: false,
-      timeline: false,
-      navigationHelpButton: true,
-      shouldAnimate: true,
-      terrain: Cesium.Terrain.fromWorldTerrain()
+      terrain: Cesium.Terrain.fromWorldTerrain(),
+      animation: false, timeline: false, infoBox: false, selectionIndicator: false
     });
 
-    viewer.scene.globe.depthTestAgainstTerrain = false;
-    viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.fxaa = true;
+    let tileset1, tileset2;
 
-    const sidePanel = document.getElementById("sidePanel");
-    const mobileBackdrop = document.getElementById("mobileBackdrop");
-    const loadingOverlay = document.getElementById("loadingOverlay");
-
-    let tileset1 = null;
-    let tileset2 = null;
-
-    async function loadTilesets() {
-      // Memuat Layer 1 (4597324)
+    async function init() {
       try {
-        tileset1 = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(4597324)
-        );
-        tileset1.style = new Cesium.Cesium3DTileStyle({
-          pointSize: 2.0
-        });
-      } catch (error) {
-        console.error("Error memuat tileset 1:", error);
-      }
+        tileset1 = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
+        tileset2 = await Cesium.Cesium3DTileset.fromIonAssetId(4599585);
+        
+        viewer.scene.primitives.add(tileset1);
+        viewer.scene.primitives.add(tileset2);
 
-      // Memuat Layer 2 (4599585)
-      try {
-        tileset2 = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(4599585)
-        );
-        tileset2.style = new Cesium.Cesium3DTileStyle({
-          pointSize: 2.0
-        });
-      } catch (error) {
-        console.error("Error memuat tileset 2:", error);
-      }
-    }
-
-    async function initScene() {
-      await loadTilesets();
-      
-      // Mengarahkan kamera secara otomatis ke Layer 1 (sebagai acuan utama)
-      if (tileset1) {
         await viewer.zoomTo(tileset1);
-      } else if (tileset2) {
-        await viewer.zoomTo(tileset2);
+        document.getElementById('loadingOverlay').classList.add('fade');
+      } catch (e) {
+        console.error(e);
       }
-
-      loadingOverlay.classList.add("hidden");
     }
 
-    function togglePanel() {
-      if (window.innerWidth <= 768) {
-        const isOpen = sidePanel.classList.contains("open");
-        if (isOpen) {
-          sidePanel.classList.remove("open");
-          mobileBackdrop.classList.remove("active");
-        } else {
-          sidePanel.classList.add("open");
-          sidePanel.classList.remove("hidden");
-          mobileBackdrop.classList.add("active");
-        }
+    // UI Logic
+    const panel = document.getElementById('sidePanel');
+    const backdrop = document.getElementById('backdrop');
+    
+    function toggleMenu() {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        panel.classList.toggle('open');
+        backdrop.classList.toggle('active');
       } else {
-        sidePanel.classList.toggle("hidden");
+        panel.classList.toggle('hidden');
       }
     }
 
-    document.getElementById("togglePanelBtn").addEventListener("click", togglePanel);
+    document.getElementById('togglePanelBtn').onclick = toggleMenu;
+    backdrop.onclick = toggleMenu;
 
-    // Zoom Kontrol
-    document.getElementById("homeBtn").addEventListener("click", async () => {
-      if (tileset1) await viewer.zoomTo(tileset1);
-    });
+    // Layer Toggles
+    document.getElementById('toggleL1').onclick = function() {
+      tileset1.show = !tileset1.show;
+      this.innerText = `Layer 1: ${tileset1.show ? 'On' : 'Off'}`;
+      this.style.opacity = tileset1.show ? '1' : '0.5';
+    };
 
-    document.getElementById("zoomSiteBtn").addEventListener("click", async () => {
-      if (tileset1) await viewer.zoomTo(tileset1);
-    });
+    document.getElementById('toggleL2').onclick = function() {
+      tileset2.show = !tileset2.show;
+      this.innerText = `Layer 2: ${tileset2.show ? 'On' : 'Off'}`;
+      this.style.opacity = tileset2.show ? '1' : '0.5';
+    };
 
-    // Kontrol Layer 1
-    document.getElementById("showLayer1Btn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = true;
-    });
-    document.getElementById("hideLayer1Btn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = false;
-    });
+    document.getElementById('homeBtn').onclick = () => viewer.zoomTo(tileset1);
+    document.getElementById('zoomSiteBtn').onclick = () => {
+        viewer.zoomTo(tileset1);
+        if(window.innerWidth <= 768) toggleMenu();
+    };
 
-    // Kontrol Layer 2
-    document.getElementById("showLayer2Btn").addEventListener("click", () => {
-      if (tileset2) tileset2.show = true;
-    });
-    document.getElementById("hideLayer2Btn").addEventListener("click", () => {
-      if (tileset2) tileset2.show = false;
-    });
-
-    // Kontrol Tampilkan / Sembunyikan Semua
-    document.getElementById("showAllBtn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = true;
-      if (tileset2) tileset2.show = true;
-    });
-    document.getElementById("hideAllBtn").addEventListener("click", () => {
-      if (tileset1) tileset1.show = false;
-      if (tileset2) tileset2.show = false;
-    });
-
-    // Responsif Sidepanel
-    mobileBackdrop.addEventListener("click", () => {
-      sidePanel.classList.remove("open");
-      mobileBackdrop.classList.remove("active");
-    });
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 768) {
-        mobileBackdrop.classList.remove("active");
-        sidePanel.classList.remove("open");
-      }
-    });
-
-    initScene();
+    init();
   </script>
 </body>
 </html>
