@@ -55,14 +55,12 @@
     }
 
     .section-title { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; margin-top:15px; }
-    /* Menghilangkan margin top untuk judul pertama */
     .info-card .section-title:first-child { margin-top: 0; }
     
     .content-text { font-size: 13px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px; }
 
-    /* Style untuk Box Informasi GeoJSON saat di-klik */
     #geoJsonDetailBox {
-      display: none; /* Disembunyikan secara default */
+      display: none;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
@@ -72,13 +70,9 @@
       font-size: 12px;
       color: var(--text-main);
     }
-    #geoJsonDetailBox.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
+    #geoJsonDetailBox.active { display: block; animation: fadeIn 0.3s ease; }
     .g-label { color: var(--text-muted); font-weight: 600; display: inline-block; width: 65px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
 
     @media (max-width: 768px) {
       .info-card { width: 100%; position: fixed; bottom: 0; left: 0; height: 35vh; border-radius: 20px 20px 0 0; }
@@ -141,6 +135,7 @@
       <button class="btn-tool active" id="btnPC" onclick="toggleLayer('pc')">● Point Cloud</button>
       <button class="btn-tool active" id="btnGS" onclick="toggleLayer('gs')">● Gaussian Splat</button>
       <button class="btn-tool active" id="btnZone" onclick="toggleLayer('zone')">● Zona Pusaka (GeoJSON)</button>
+      <button class="btn-tool active" id="btnOSM" onclick="toggleLayer('osm')">● Bangunan Sekitar</button>
       
       <div class="section-title" style="color:white; opacity:0.5; margin-left:5px; margin-top:10px;">Tools</div>
       <button class="btn-tool" id="btnCoord" onclick="setActiveTool('coord')">📍 Cek Koordinat</button>
@@ -162,15 +157,14 @@
     animation: false, timeline: false, infoBox: false, selectionIndicator: false
   });
 
-  // Agar poligon geojson tidak tertutup kontur tanah
   viewer.scene.globe.depthTestAgainstTerrain = false;
 
-  let pcLayer, gsLayer, zoneDataSource;
+  // PENAMBAHAN VARIABEL OSM LAYER
+  let pcLayer, gsLayer, zoneDataSource, osmLayer;
   let activeTool = null;
   let measurements = [];
-  let geoJsonEntityMap = new Map(); // Untuk menyimpan data Turf kalkulasi
+  let geoJsonEntityMap = new Map();
 
-  // Data GeoJSON
   const geojsonData = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"Zona":"Inti","stroke":"#555555","stroke-width":2,"stroke-opacity":1,"fill":"#ff2600","fill-opacity":0.2},"geometry":{"coordinates":[[[117.4275602103138,-8.50395879630588],[117.42639825790349,-8.503963810276943],[117.42648753174268,-8.50176752593083],[117.42662210361448,-8.501024623708432],[117.42660641941592,-8.500819080314756],[117.426584399469,-8.500702412281726],[117.42655923381659,-8.500615300127365],[117.42651519392484,-8.500532854677758],[117.4264711540311,-8.500493965308365],[117.42618453332835,-8.500655452726974],[117.42604140367877,-8.500725453559198],[117.42581963136433,-8.500647674855],[117.42548933217341,-8.500657008300664],[117.4254765318152,-8.500875126145019],[117.42480216645856,-8.500862157817139],[117.4247762339304,-8.501537494855285],[117.42477338554647,-8.501607922012298],[117.4246439106559,-8.502361532468726],[117.42462021806313,-8.502552337517997],[117.42433809538176,-8.50397007322843],[117.42430274973776,-8.504481669597297],[117.42616940338291,-8.505049218174221],[117.42678793495924,-8.505178281774903],[117.42683469453618,-8.504905513604882],[117.42750010957013,-8.504919424848424],[117.42754449999705,-8.504912565117735],[117.42756669521054,-8.504897473710386],[117.42758195441934,-8.504872778679655],[117.42759951891583,-8.503993292290914],[117.4275602103138,-8.50395879630588]]],"type":"Polygon"},"id":0},{"type":"Feature","properties":{"Zona":"Pendukung","stroke":"#000000","stroke-width":2,"stroke-opacity":1,"fill":"#fffb00","fill-opacity":0.2},"geometry":{"coordinates":[[[117.4247119850296,-8.50090287546125],[117.4245332754561,-8.500898343507771],[117.42434311014,-8.500823566266547],[117.42423398211838,-8.500845335346725],[117.42407566860118,-8.500852617869143],[117.42403148808273,-8.50080892273138],[117.42401082741515,-8.50051057150499],[117.42389424769596,-8.500470562519624],[117.42381680601477,-8.500440863983783],[117.42376307097004,-8.500372088418302],[117.42367456619212,-8.500240789578228],[117.42351060964319,-8.500581638975163],[117.42325794343611,-8.500939863351192],[117.42288264639757,-8.501348595316784],[117.42259365368034,-8.501640186671352],[117.42233969038313,-8.501822070274798],[117.42195728699056,-8.50213387332181],[117.42168288986403,-8.502454334438525],[117.42151941923782,-8.502688184273595],[117.42142016921281,-8.50296533944831],[117.42136178684626,-8.503202076001799],[117.42131478421987,-8.503600544658795],[117.42132382502871,-8.5038553750299],[117.4213690290731,-8.504177265783369],[117.4214323147367,-8.504503626964222],[117.42156792687126,-8.50471822046687],[117.42174240526913,-8.504852019917692],[117.42193717122194,-8.504964010703333],[117.42231288616483,-8.505071028376705],[117.42262860105836,-8.505147354412387],[117.42310217340088,-8.505268782166183],[117.42335123737405,-8.505352046889797],[117.42396512594445,-8.505470005179546],[117.42423172963271,-8.505490821350918],[117.42439660296588,-8.505581024748281],[117.42502803275516,-8.5060077559163],[117.42538584296983,-8.506288773743435],[117.42567349431744,-8.506472649492935],[117.42591898841249,-8.50660783604738],[117.42617156032776,-8.506684161778026],[117.42657146586123,-8.506715385935678],[117.42706959380757,-8.506732732688832],[117.42786238898566,-8.506670284373797],[117.42817108799505,-8.506635590860995],[117.42824124685973,-8.506517632891772],[117.4284490535083,-8.505606305724825],[117.4284701011677,-8.50547100063028],[117.42848413294064,-8.505325287398279],[117.42848413294064,-8.505144880461856],[117.42844905276212,-8.503909785191624],[117.42833232424857,-8.502268048314292],[117.428251641553,-8.502059884796623],[117.42814991119803,-8.5018690681393],[117.42709753085927,-8.500269677828115],[117.4270589434825,-8.500293963691917],[117.4268133874537,-8.500287024874154],[117.42655379965197,-8.500453556466852],[117.42665553000694,-8.500682537289336],[117.42669060943933,-8.50097743663244],[117.42666956177987,-8.501143967926296],[117.42657835525574,-8.501737235071431],[117.42650118258967,-8.502330502063643],[117.42648013493033,-8.50305560398236],[117.42643453309455,-8.503905602656388],[117.42764126558131,-8.503884786398885],[117.4276132020355,-8.50494641410198],[117.42687653534642,-8.504925596188656],[117.42682040825468,-8.505217022902556],[117.42616793018647,-8.505074775406214],[117.42427364081857,-8.50448845217069],[117.42431474864566,-8.503904422008816],[117.42458238677779,-8.50250092358219],[117.42474435679395,-8.50160494947049],[117.4247654067583,-8.500900661393857],[117.4247119850296,-8.50090287546125]]],"type":"Polygon"},"id":1},{"type":"Feature","properties":{"Zona":"Penyangga","stroke":"#000000","stroke-width":2,"stroke-opacity":1,"fill":"#00f900","fill-opacity":0.2},"geometry":{"coordinates":[[[117.42709382718954,-8.500266064895385],[117.42812546891679,-8.501827296644493],[117.42825142277138,-8.50204756679372],[117.42833518013163,-8.50226738378538],[117.42845073985916,-8.503917413935497],[117.4284856840365,-8.505328542796164],[117.42844500569976,-8.505622960164303],[117.4282410603974,-8.506514492694194],[117.42817447297767,-8.506637612698043],[117.42765914423791,-8.506686288038082],[117.42707433179737,-8.506732099528918],[117.42651847158413,-8.506712056745357],[117.426173954055,-8.506683424195629],[117.42591628968506,-8.50660325304409],[117.4255688770516,-8.506405688348437],[117.42536911478663,-8.506276841753788],[117.42505412451715,-8.506035783600709],[117.42549186631203,-8.507511149586819],[117.42544956500689,-8.508082567034577],[117.42516733674609,-8.509028164000568],[117.42850223804453,-8.509068038519686],[117.42876718702598,-8.508709167694391],[117.42890542127714,-8.508384474752845],[117.42893997983941,-8.508099656156858],[117.42882253529103,-8.507714724571798],[117.42968833306821,-8.50654381448362],[117.42970024771762,-8.505880005779275],[117.42975187786539,-8.505239763157917],[117.42984322302925,-8.504862686320735],[117.4299703126249,-8.504501321559715],[117.42997825572462,-8.504289215997488],[117.4298908815208,-8.503483998950003],[117.42999017026767,-8.50292231025115],[117.43012155279541,-8.502093078644748],[117.43014538209422,-8.501755278719557],[117.42978794272494,-8.500584760360695],[117.42961647335801,-8.500034164378619],[117.42933052176807,-8.499334993007096],[117.4290763425754,-8.498828289362848],[117.42890556593164,-8.49854547773431],[117.42738049121738,-8.49934677326037],[117.42750646531061,-8.49956250760546],[117.42731519034811,-8.499679412984221],[117.42733238360296,-8.499711296263683],[117.4269949659726,-8.499917474737543],[117.42718624093516,-8.500215051720602],[117.42709382718954,-8.500266064895385]]],"type":"Polygon"},"id":2}]};
 
   async function loadData() {
@@ -178,11 +172,7 @@
     try {
       pcLayer = await Cesium.Cesium3DTileset.fromIonAssetId(4597324);
       viewer.scene.primitives.add(pcLayer);
-      
-      // MENGATUR UKURAN TITIK MENJADI 2
-      pcLayer.style = new Cesium.Cesium3DTileStyle({
-        pointSize: 2.0
-      });
+      pcLayer.style = new Cesium.Cesium3DTileStyle({ pointSize: 2.0 });
     } catch(e){}
 
     // 2. Load GS
@@ -194,8 +184,29 @@
         gsLayer.style = new Cesium.Cesium3DTileStyle(extras.ion.defaultStyle);
       }
     } catch(e){}
+    
+    // 3. Load OSM Bangunan Sekitar (Dipotong tepat di koordinat Zona Inti GeoJSON)
+    try {
+      osmLayer = await Cesium.createOsmBuildingsAsync();
+      
+      // Mengekstrak koordinat Zona Inti (ID 0) dari variabel geojsonData untuk memotong OSM
+      const zonaIntiCoords = geojsonData.features[0].geometry.coordinates[0];
+      const flatCoords = [];
+      zonaIntiCoords.forEach(coord => { flatCoords.push(coord[0], coord[1]); });
+      
+      // Melakukan kliping (lubang) pada OSM berdasarkan poligon Zona Inti
+      const polygon = new Cesium.ClippingPolygon({
+          positions: Cesium.Cartesian3.fromDegreesArray(flatCoords)
+      });
+      osmLayer.clippingPolygons = new Cesium.ClippingPolygonCollection({
+          polygons: [polygon],
+          inverse: false // false artinya kita "melubangi" (menyembunyikan) bagian dalam poligon
+      });
+      
+      viewer.scene.primitives.add(osmLayer);
+    } catch(e) { console.error("OSM Error:", e); }
 
-    // 3. Load GeoJSON dan setup kalkulasinya
+    // 4. Load GeoJSON
     try {
       zoneDataSource = await Cesium.GeoJsonDataSource.load(geojsonData, { clampToGround: true });
       viewer.dataSources.add(zoneDataSource);
@@ -205,7 +216,6 @@
         const entity = entities[i];
         const props = entity.properties;
         
-        // Setup visual GeoJSON
         const fillHex = props.fill ? props.fill.getValue() : '#FFFFFF';
         const fillOp = props['fill-opacity'] ? props['fill-opacity'].getValue() : 0.5;
         const strokeHex = props.stroke ? props.stroke.getValue() : '#000000';
@@ -215,8 +225,6 @@
         entity.polygon.outline = true;
         entity.polygon.outlineColor = Cesium.Color.fromCssColorString(strokeHex);
         
-        // Simpan data hasil kalkulasi Turf.js per entitas ke dalam Map
-        // feature asli diakses via entity.properties (butuh format ulang untuk turf)
         const featureGeoJson = geojsonData.features.find(f => f.id === entity.properties.id?.getValue() || f.properties.Zona === zonaName);
         
         if (featureGeoJson) {
@@ -225,7 +233,6 @@
             const lon = centroid.geometry.coordinates[0].toFixed(5);
             const lat = centroid.geometry.coordinates[1].toFixed(5);
             
-            // Simpan info ke entity custom object agar bisa dipanggil saat di klik
             geoJsonEntityMap.set(entity.id, {
                 nama: "Zona " + zonaName,
                 color: fillHex,
@@ -251,8 +258,12 @@
     else if(type === 'zone' && zoneDataSource) { 
       zoneDataSource.show = !zoneDataSource.show; 
       document.getElementById('btnZone').classList.toggle('active'); 
-      // Sembunyikan detail box kalau layernya dimatikan
       if(!zoneDataSource.show) document.getElementById('geoJsonDetailBox').classList.remove('active');
+    }
+    // KONTROL UNTUK OSM
+    else if(type === 'osm' && osmLayer) { 
+      osmLayer.show = !osmLayer.show; 
+      document.getElementById('btnOSM').classList.toggle('active'); 
     }
   }
 
@@ -281,22 +292,17 @@
     document.getElementById('outputInfo').innerText = "Status: Ready";
   }
 
-  // Handle Clicks untuk Tools DAN Klik GeoJSON
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   handler.setInputAction(function(click) {
     
-    // --- 1. Logika untuk Klik Poligon GeoJSON ---
-    // Cek apakah user mengklik sebuah entity (seperti poligon geojson)
     const pickedObject = viewer.scene.pick(click.position);
     
     if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id)) {
-        const entityId = pickedObject.id.id; // Mengambil ID dari entitas yg di klik
+        const entityId = pickedObject.id.id; 
         
-        // Periksa apakah entity yg di klik ada di daftar GeoJSON kita
         if (geoJsonEntityMap.has(entityId)) {
             const data = geoJsonEntityMap.get(entityId);
             
-            // Tampilkan Box Info GeoJSON di Panel
             const detailBox = document.getElementById('geoJsonDetailBox');
             document.getElementById('gd-title').innerText = data.nama;
             document.getElementById('gd-title').style.color = data.color;
@@ -305,16 +311,13 @@
             detailBox.style.borderLeftColor = data.color;
             detailBox.classList.add('active');
             
-            // Jika kita hanya ingin melihat info tanpa nge-trigger tools koordinat, hentikan fungsi disini.
             if(activeTool === null) return; 
         }
     } else {
-        // Jika klik di luar poligon (atau tanah kosong), sembunyikan info GeoJSON
         document.getElementById('geoJsonDetailBox').classList.remove('active');
     }
 
 
-    // --- 2. Logika Tools (Koordinat & Jarak) ---
     const cartesian = viewer.scene.pickPosition(click.position);
     if (!Cesium.defined(cartesian)) return;
 
