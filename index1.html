@@ -1,4 +1,156 @@
-Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik";
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Heritage Sumbawa</title>
+
+  <script src="https://unpkg.com/cesium@latest/Build/Cesium/Cesium.js"></script>
+  <link href="https://unpkg.com/cesium@latest/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --glass: rgba(15, 23, 42, 0.85);
+      --accent: #fbbf24;
+      --border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+    html, body, #cesiumContainer { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+    .ui-wrapper { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; z-index: 10; }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px; pointer-events: auto; }
+    .brand { background: var(--glass); border: 1px solid var(--border); padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(12px); }
+    .brand h1 { font-size: 15px; color: var(--accent); font-weight: 800; }
+    .brand p { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+
+    .middle-content { flex: 1; display: flex; justify-content: space-between; padding: 0 16px; align-items: flex-start; }
+
+    .info-card {
+      width: 320px; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; pointer-events: auto;
+      backdrop-filter: blur(15px); max-height: 75vh; overflow-y: auto;
+    }
+
+    .layer-controls { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
+    .btn-tool {
+      background: var(--glass); border: 1px solid var(--border); color: white;
+      padding: 12px; border-radius: 10px; cursor: pointer;
+      backdrop-filter: blur(10px); font-size: 11px; font-weight: 600;
+      transition: 0.2s; display: flex; align-items: center; gap: 8px; width: 180px;
+    }
+    .btn-tool.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .btn-tool:hover { background: rgba(255,255,255,0.1); }
+
+    .bottom-status { padding: 16px; display: flex; justify-content: center; pointer-events: auto; }
+    .status-display {
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 8px 20px; border-radius: 50px; font-size: 11px; color: var(--accent); backdrop-filter: blur(10px);
+    }
+
+    .section-title { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; margin-top:15px; }
+    .info-card .section-title:first-child { margin-top: 0; }
+    
+    .content-text { font-size: 13px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px; }
+
+    #geoJsonDetailBox {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+    #geoJsonDetailBox.active { display: block; animation: fadeIn 0.3s ease; }
+    .g-label { color: var(--text-muted); font-weight: 600; display: inline-block; width: 65px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 768px) {
+      .info-card { width: 100%; position: fixed; bottom: 0; left: 0; height: 35vh; border-radius: 20px 20px 0 0; }
+      .layer-controls { position: fixed; top: 80px; right: 16px; }
+      .btn-tool { width: 150px; padding: 10px; }
+      .bottom-status { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cesiumContainer"></div>
+
+<div class="ui-wrapper">
+  <header class="top-nav">
+    <div class="brand">
+      <h1>BALA DATU RANGA</h1>
+      <p>Videogrammetry 3D Survey</p>
+    </div>
+  </header>
+
+  <div class="middle-content">
+    <aside class="info-card">
+      <div class="section-title">Informasi Situs</div>
+      <p class="content-text">Situs Bala Datu Ranga direkonstruksi secara digital menggunakan data visual dari udara untuk pemetaan cagar budaya presisi. Bala Datu Ranga adalah situs cagar budaya kediaman Perdana Menteri Kesultanan Sumbawa. Struktur bangunan ini merupakan prototipe arsitektur vernakular Sumbawa yang sangat penting untuk dilestarikan secara digital.</p>
+      
+      <div class="section-title">Informasi Semantik</div>
+      <p class="content-text" style="font-size: 12px; color: var(--text-muted);">
+        <b>Fungsi Sebelumnya:</b> Kediaman sekaligus tempat Datu Ranga menerima tamu dari kalangan pemerintah di masa lalu<br>
+        <b>Fungsi Terbaru:</b> Museum<br>
+        <b>Material:</b> Kayu Jati & Atap Seng<br>
+        <b>Elemen:</b> 25 Tiang Utama (Saka)<br>
+        <b>Status:</b> Cagar Budaya Peringkat Kabupaten
+      </p>
+      
+      <div class="section-title">Metodologi</div>
+      <p class="content-text" style="font-size: 12px; color: var(--text-muted);">
+        Data diakuisisi menggunakan Videogrammetry untuk rekonstruksi geometri menjadi point cloud dan tekstur Gaussian Splatting.<br>
+        <b>Technique:</b> Videogrammetry<br>
+        <b>Platform:</b> UAV / Drone<br>
+        <b>Output:</b> Point Cloud & Gaussian Splat
+      </p>
+
+      <div class="section-title">Panduan Alat</div>
+      <p class="content-text" style="font-size: 11px; color: var(--accent);">
+        • <b>Cek Koordinat:</b> Aktifkan lalu klik pada objek.<br>
+        • <b>Ukur Jarak:</b> Klik dua titik pada model.<br>
+        • <b>Info Area:</b> Klik pada poligon (Zona Pusaka) untuk melihat luas area.
+      </p>
+
+      <div id="geoJsonDetailBox">
+        <div style="font-size: 14px; font-weight:bold; margin-bottom: 8px;" id="gd-title">Zona Terpilih</div>
+        <div style="margin-bottom: 4px;"><span class="g-label">Luas</span>: <span id="gd-area"></span></div>
+        <div style="margin-bottom: 4px;"><span class="g-label">Pusat</span>: <span id="gd-center"></span></div>
+      </div>
+    </aside>
+
+    <nav class="layer-controls">
+      <div class="section-title" style="color:white; opacity:0.5; margin-left:5px;">Layers</div>
+      <button class="btn-tool active" id="btnPC" onclick="toggleLayer('pc')">● Point Cloud</button>
+      <button class="btn-tool active" id="btnGS" onclick="toggleLayer('gs')">● Gaussian Splat</button>
+      <button class="btn-tool active" id="btnZone" onclick="toggleLayer('zone')">● Zona Pusaka (GeoJSON)</button>
+      <button class="btn-tool active" id="btnOSM" onclick="toggleLayer('osm')">● Bangunan Sekitar</button>
+      
+      <div class="section-title" style="color:white; opacity:0.5; margin-left:5px; margin-top:10px;">Tools</div>
+      <button class="btn-tool" id="btnCoord" onclick="setActiveTool('coord')">📍 Cek Koordinat</button>
+      <button class="btn-tool" id="btnDist" onclick="setActiveTool('dist')">📏 Ukur Jarak</button>
+      <button class="btn-tool" onclick="resetTools()" style="color: #ef4444;">✕ Reset Tools</button>
+    </nav>
+  </div>
+
+  <footer class="bottom-status">
+    <div class="status-display" id="outputInfo">Status: Ready | Klik Tools untuk memulai</div>
+  </footer>
+</div>
+
+<script>
+  Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTBmYjcwMS1iMWFkLTQwZmEtOTQ0ZS00ZjYwNTIyMDA0YzMiLCJpZCI6MjUyMDkzLCJpYXQiOjE3MzA0OTU2MjR9.slOIgwdmuPVT3uiTpmn_lt87ekq4MmWlyHI8tmYC0ik";
 
   const viewer = new Cesium.Viewer("cesiumContainer", {
     terrain: Cesium.Terrain.fromWorldTerrain(),
@@ -234,3 +386,6 @@ Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOi
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
   loadData();
+</script>
+</body>
+</html>
